@@ -12,13 +12,20 @@ public class CommentAdapter extends BaseAdapter {
     Context context;
 
     public CommentAdapter(ArrayList<Comment> items, Context context) {
-        this.items = new ArrayList<>();
         this.items = items;
         this.context = context;
     }
 
     public void addItem(Comment item){
         items.add(item);
+    }
+
+    public void clear(){
+        items.clear();
+    }
+
+    public void addAll(ArrayList<Comment> items){
+        this.items = items;
     }
 
     @Override

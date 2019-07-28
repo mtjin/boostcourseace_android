@@ -20,7 +20,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorBlue">
+                <TextView
+                    android:layout_marginLeft="8dp"
+                    android:id="@+id/movieinfo_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:text="씨네마천국"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="8dp" />
+            </android.support.v7.widget.Toolbar>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -257,7 +271,7 @@
                             android:layout_width="30dp"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="0.0"
+                            android:text="5.0"
                             android:textStyle="bold" />
 
                     </LinearLayout>

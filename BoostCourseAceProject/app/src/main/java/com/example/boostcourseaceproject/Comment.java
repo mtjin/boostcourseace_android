@@ -1,6 +1,8 @@
 package com.example.boostcourseaceproject;
 
-public class Comment {
+import java.io.Serializable;
+
+public class Comment implements Serializable {
     private int photo;
     private float ratingScore;
     private String nickName;
@@ -9,6 +11,7 @@ public class Comment {
     private String time;
 
     public Comment() {
+
     }
 
     public Comment(int photo, float ratingScore, String nickName, String text, int recommend, String time) {
