@@ -12,7 +12,7 @@ import com.example.boostcourseaceproject.databinding.ActivityCommentWriteBinding
 public class CommentWriteActivity extends AppCompatActivity {
     ActivityCommentWriteBinding binding;
     //putExtra key
-    final static String commentWriteExtra = "commentExtra" ;
+    final static String COMMENT_EXTRA = "COMMENT_EXTRA" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class CommentWriteActivity extends AppCompatActivity {
            //메세지내용, 레이팅바 점수 외 나머진 고정으로 해서 전달해주도록 한다.
            Comment comment = new Comment(R.drawable.ic_userprofile, rating, "진승언", message, 0, "10");
            Intent resultIntent = new Intent();
-           resultIntent.putExtra(commentWriteExtra, comment);
+           resultIntent.putExtra(COMMENT_EXTRA, comment);
            setResult(RESULT_OK, resultIntent);
            finish();
        }

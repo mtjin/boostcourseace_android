@@ -10,9 +10,6 @@ public class Comment implements Serializable {
     private int recommend;
     private String time;
 
-    public Comment() {
-
-    }
 
     public Comment(int photo, float ratingScore, String nickName, String text, int recommend, String time) {
         this.photo = photo;

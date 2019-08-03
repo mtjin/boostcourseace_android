@@ -10,12 +10,12 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentView extends LinearLayout {
-    private CircleImageView photoImageView;  //사진
-    private RatingBar ratingBar;  //별점
-    private TextView nickNameTextView; //이름
-    private TextView commentTextView; //한줄평
-    private TextView timeTextView;  //작성시간
-    private TextView recommendCountTextView; //추천수
+    private CircleImageView mPhotoImageView;  //사진
+    private RatingBar mRatingBar;  //별점
+    private TextView mNickNameTextView; //이름
+    private TextView mCommentTextView; //한줄평
+    private TextView mTimeTextView;  //작성시간
+    private TextView mRecommendCountTextView; //추천수
 
     public CommentView(Context context) {
         super(context);
@@ -32,39 +32,39 @@ public class CommentView extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //인플레이션의 기능을 사용해서 아이템뷰를 inflate해줌(붙여줌)
         inflater.inflate(R.layout.item_comment, this, true);
-        photoImageView = findViewById(R.id.comment_civ_photo);
-        ratingBar = findViewById(R.id.comment_rb_rating);
-        nickNameTextView = findViewById(R.id.comment_tv_nickname);
-        commentTextView = findViewById(R.id.comment_tv_comment);
-        timeTextView = findViewById(R.id.comment_tv_time);
-        recommendCountTextView = findViewById(R.id.comment_tv_recommendcount);
+        mPhotoImageView = findViewById(R.id.comment_civ_photo);
+        mRatingBar = findViewById(R.id.comment_rb_rating);
+        mNickNameTextView = findViewById(R.id.comment_tv_nickname);
+        mCommentTextView = findViewById(R.id.comment_tv_comment);
+        mTimeTextView = findViewById(R.id.comment_tv_time);
+        mRecommendCountTextView = findViewById(R.id.comment_tv_recommendcount);
     }
 
 
-    public void setPhotoImageView(int photo) {
-        photoImageView.setImageResource(photo);
+    public void setmPhotoImageView(int photo) {
+        mPhotoImageView.setImageResource(photo);
     }
 
-    public void setRatingBar(float ratingScore) {
-        ratingBar.setRating(ratingScore);
-    }
-
-
-    public void setNickNameTextView(String nickName) {
-        nickNameTextView.setText(nickName);
-    }
-
-    public void setCommentTextView(String comment) {
-        commentTextView.setText(comment);
+    public void setmRatingBar(float ratingScore) {
+        mRatingBar.setRating(ratingScore);
     }
 
 
-    public void setTimeTextView(String time) {
-        timeTextView.setText(time);
+    public void setmNickNameTextView(String nickName) {
+        mNickNameTextView.setText(nickName);
+    }
+
+    public void setmCommentTextView(String comment) {
+        mCommentTextView.setText(comment);
     }
 
 
-    public void setRecommendCountTextView(int recommendCount) {
-        recommendCountTextView.setText(recommendCount+"");
+    public void setmTimeTextView(String time) {
+        mTimeTextView.setText(time);
+    }
+
+
+    public void setmRecommendCountTextView(int recommendCount) {
+        mRecommendCountTextView.setText(recommendCount+"");
     }
 }

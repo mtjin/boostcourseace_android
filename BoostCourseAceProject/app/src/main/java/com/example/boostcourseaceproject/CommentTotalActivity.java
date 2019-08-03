@@ -16,21 +16,21 @@ import java.util.ArrayList;
 public class CommentTotalActivity extends AppCompatActivity {
     //TAG
     final static String TAG = "CommentTotalActivityT";
-    //binding
-    ActivityCommentTotalBinding binding;
+    //mBinding
+    ActivityCommentTotalBinding mBinding;
     //requestCode
     final static int WRITE_REQUEST = 11;
     //putExtra key
-    final static String commentExtra = "commentExtra";
-    final static String commentListExtra = "commentListExtra";
+    final static String COMMENT_EXTRA = "COMMENT_EXTRA";
+    final static String COMMENT_LIST_EXTRA = "COMMENT_LIST_EXTRA";
     //value
     private ArrayList<Comment> mCommentList = new ArrayList<>();
     private CommentAdapter mCommentAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_comment_total);
-        binding.setActivity(this);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_comment_total);
+        mBinding.setActivity(this);
         //인텐트처리
         processIntent();
     }
@@ -38,9 +38,9 @@ public class CommentTotalActivity extends AppCompatActivity {
     //인텐트 수신 처리
     private void processIntent(){
         Intent intent = getIntent();
-        mCommentList = (ArrayList<Comment>) intent.getSerializableExtra(commentListExtra);
+        mCommentList = (ArrayList<Comment>) intent.getSerializableExtra(COMMENT_LIST_EXTRA);
         mCommentAdapter = new CommentAdapter(mCommentList, getApplicationContext());
-        binding.commenttotalLivCommentlist.setAdapter(mCommentAdapter);//리스트뷰 어댑터연결
+        mBinding.commenttotalLivCommentlist.setAdapter(mCommentAdapter);//리스트뷰 어댑터연결
     }
 
 
@@ -53,7 +53,7 @@ public class CommentTotalActivity extends AppCompatActivity {
 
     public void backOnClick(View view){
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(commentListExtra, mCommentList);
+        resultIntent.putExtra(COMMENT_LIST_EXTRA, mCommentList);
         setResult(RESULT_OK, resultIntent);
         finish();
     }
@@ -61,7 +61,7 @@ public class CommentTotalActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(commentListExtra, mCommentList);
+        resultIntent.putExtra(COMMENT_LIST_EXTRA, mCommentList);
         setResult(RESULT_OK, resultIntent);
         super.onBackPressed();
     }
@@ -70,7 +70,7 @@ public class CommentTotalActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == WRITE_REQUEST && resultCode == RESULT_OK) { //작성하기결과
-            Comment comment = (Comment) data.getSerializableExtra(commentExtra);
+            Comment comment = (Comment) data.getSerializableExtra(COMMENT_EXTRA);
             if (comment != null) {
                 mCommentList.add(comment);
                 mCommentAdapter.notifyDataSetChanged();

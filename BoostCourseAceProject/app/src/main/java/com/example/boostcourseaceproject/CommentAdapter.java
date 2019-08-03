@@ -16,15 +16,15 @@ public class CommentAdapter extends BaseAdapter {
         this.context = context;
     }
 
-    public void addItem(Comment item){
+    public void addItem(Comment item) {
         items.add(item);
     }
 
-    public void clear(){
+    public void clear() {
         items.clear();
     }
 
-    public void addAll(ArrayList<Comment> items){
+    public void addAll(ArrayList<Comment> items) {
         this.items = items;
     }
 
@@ -52,12 +52,12 @@ public class CommentAdapter extends BaseAdapter {
             view = (CommentView) convertView;
         }
         Comment item = items.get(position);
-        view.setPhotoImageView(item.getPhoto());
-        view.setNickNameTextView(item.getNickName());
-        view.setCommentTextView(item.getComment());
-        view.setRatingBar(item.getRatingScore());
-        view.setTimeTextView(item.getTime());
-        view.setRecommendCountTextView(item.getRecommend());
-        return  view;
+        view.setmPhotoImageView(item.getPhoto());
+        view.setmNickNameTextView(item.getNickName());
+        view.setmCommentTextView(item.getComment());
+        view.setmRatingBar(item.getRatingScore());
+        view.setmTimeTextView(item.getTime());
+        view.setmRecommendCountTextView(item.getRecommend());
+        return view;
     }
 }
