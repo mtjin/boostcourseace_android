@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:textStyle="bold"
-                android:text="한줄평 목록"
+                android:text="@string/comment_toolbar_title"
                 android:textColor="@color/colorWhite"
                 android:layout_marginStart="16dp" />
         </androidx.appcompat.widget.Toolbar>
@@ -50,7 +50,7 @@
                 android:id="@+id/commenttotal_tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="군도"
+                android:text="@string/movie_title"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -87,16 +87,25 @@
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center"
-                android:text="6.0" />
-
+                android:text="@string/movie_ratingscore" />
+            <TextView
+                android:layout_marginStart="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="(" />
             <TextView
                 android:id="@+id/commenttotal_tv_participation"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="3dp"
                 android:gravity="center"
-                android:text="(10명 참여)" />
-
+                android:text="@string/movie_commentnum" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_marginRight="8dp"
+                android:text="명 참여)" />
         </LinearLayout>
 
         <LinearLayout
@@ -111,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="16dp"
-                android:text="한줄평"
+                android:text="@string/movie_oneline_evaluation"
                 android:textColor="@color/colorBlack"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -126,10 +135,10 @@
                     android:id="@+id/commenttotal_tv_write"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="16dp"
-                    android:drawableLeft="@drawable/ic_review_selected"
+                    android:layout_marginEnd="16dp"
+                    android:drawableStart="@drawable/ic_review_selected"
                     android:gravity="right|center_vertical"
-                    android:text="작성하기"
+                    android:text="@string/movie_write"
                     android:textColor="@color/colorOrange"
                     android:textSize="18dp" />
             </LinearLayout>

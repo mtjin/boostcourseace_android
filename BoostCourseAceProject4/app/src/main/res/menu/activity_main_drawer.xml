@@ -6,22 +6,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_0"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_list"
             android:title="영화 목록" />
         <item
             android:id="@+id/nav_1"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_review"
             android:title="영화 API" />
         <item
             android:id="@+id/nav_2"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_book"
             android:title="예매하기" />
     </group>
 
     <item android:title="설정">
         <menu>
             <item
-
                 android:id="@+id/nav_manage"
                 android:icon="@drawable/ic_settings"
                 android:title="사용자 설정" />

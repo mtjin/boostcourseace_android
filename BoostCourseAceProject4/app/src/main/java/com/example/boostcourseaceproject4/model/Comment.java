@@ -2,62 +2,62 @@ package com.example.boostcourseaceproject4.model;
 
 import java.io.Serializable;
 
+/*"result": [
+        {
+        "id": 3445,
+        "writer": "sjh",
+        "movieId": 1,
+        "writer_image": null,
+        "time": "2019-03-23 20:59:12",
+        "timestamp": 1553342351,
+        "rating": 4.4,
+        "contents": "헉 넘나 재밌어용하하하",
+        "recommend": 0
+        },*/
 public class Comment implements Serializable {
-    private int photo;
-    private float ratingScore;
-    private String nickName;
-    private String comment;
-    private int recommend;
-    private String time;
+    public int id;
+    public String writer;
+    public int movieId;
+    public String time;
+    public float rating;
+    public String contents;
+    public int recommend;
 
+    public Comment() {
+    }
 
-    public Comment(int photo, float ratingScore, String nickName, String text, int recommend, String time) {
-        this.photo = photo;
-        this.ratingScore = ratingScore;
-        this.nickName = nickName;
-        this.comment = text;
-        this.recommend = recommend;
+    public Comment(int id, String writer, int movieId, String time, float rating, String contents, int recommend) {
+        this.id = id;
+        this.writer = writer;
+        this.movieId = movieId;
         this.time = time;
-    }
-
-    public int getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(int photo) {
-        this.photo = photo;
-    }
-
-    public float getRatingScore() {
-        return ratingScore;
-    }
-
-    public void setRatingScore(float ratingScore) {
-        this.ratingScore = ratingScore;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getRecommend() {
-        return recommend;
-    }
-
-    public void setRecommend(int recommend) {
+        this.rating = rating;
+        this.contents = contents;
         this.recommend = recommend;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getWriter() {
+        return writer;
+    }
+
+    public void setWriter(String writer) {
+        this.writer = writer;
+    }
+
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
     }
 
     public String getTime() {
@@ -66,5 +66,29 @@ public class Comment implements Serializable {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    public int getRecommend() {
+        return recommend;
+    }
+
+    public void setRecommend(int recommend) {
+        this.recommend = recommend;
     }
 }

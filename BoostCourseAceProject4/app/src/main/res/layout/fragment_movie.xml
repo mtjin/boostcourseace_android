@@ -22,7 +22,7 @@
             android:id="@+id/movie_tv_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"
+            android:text="@string/movie_id"
             android:textColor="@color/colorWhite"
             android:textSize="16dp"
             android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:id="@+id/movie_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="군도"
+            android:text="@string/movie_title"
             android:textColor="@color/colorWhite"
             android:textSize="16dp"
             android:textStyle="bold" />
@@ -67,7 +67,7 @@
             android:id="@+id/movie_tv_reservedrate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="61.6"
+            android:text="@string/movie_share"
             android:textColor="@color/colorWhite"
             android:textSize="12dp"
             android:textStyle="bold" />
@@ -100,7 +100,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="D-1"
+            android:text="@string/movie_d_day"
             android:textColor="@color/colorWhite"
             android:textSize="12dp"
             android:textStyle="bold" />
@@ -112,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/shape_round_orange_button"
-        android:text="상세보기"
+        android:text="@string/movie_detailbtn"
         android:textColor="@color/colorWhite"
         android:textStyle="bold" />
 </LinearLayout>

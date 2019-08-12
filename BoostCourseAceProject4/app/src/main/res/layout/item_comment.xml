@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     android:orientation="horizontal">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -40,11 +42,6 @@
                 android:text="10"
                 android:textSize="12dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="분전"
-                android:textSize="12dp" />
 
             <RatingBar
                 android:id="@+id/comment_rb_rating"
@@ -75,7 +72,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_recommend"
+                android:id="@+id/comment_tv_recommend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="추천 "

@@ -17,21 +17,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-         <!--   <android.support.v7.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/colorBlue">
-                <TextView
-                    android:layout_marginLeft="8dp"
-                    android:id="@+id/movieinfo_toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:text="씨네마천국"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="8dp" />
-            </android.support.v7.widget.Toolbar>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,17 +27,17 @@
                 android:paddingBottom="16dp">
 
                 <ImageView
+                    android:paddingTop="20dp"
                     android:id="@+id/movieinfo_iv_poster"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:scaleType="centerCrop"
+                    android:layout_width="120dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
                     android:src="@drawable/image11" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="50dp"
                     android:orientation="vertical">
 
@@ -67,7 +52,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="3dp"
-                            android:text="군도"
+                            android:text="@string/movie_title"
                             android:textColor="@color/colorWhite"
                             android:textSize="25dp"
                             android:textStyle="bold" />
@@ -76,7 +61,7 @@
                             android:id="@+id/iv_grade"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
                             android:layout_marginBottom="1dp"
                             android:padding="5dp" />
                     </LinearLayout>
@@ -90,7 +75,7 @@
                             android:id="@+id/movieinfo_tv_dates"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="2014.07.23"
+                            android:text="@string/movie_open_date"
                             android:textColor="@color/colorWhite"
                             android:textSize="18dp"
                             android:textStyle="bold" />
@@ -113,7 +98,7 @@
                             android:id="@+id/movieinfo_tv_genere"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="액션"
+                            android:text="@string/movie_genere"
                             android:textColor="@color/colorWhite"
                             android:textSize="18dp" />
 
@@ -128,7 +113,7 @@
                             android:id="@+id/movieinfo_tv_runningtime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="137분"
+                            android:text="@string/movie_runningtime"
                             android:textColor="@color/colorWhite"
                             android:textSize="18dp" />
                     </LinearLayout>
@@ -150,7 +135,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="15"
+                            android:text="@string/movie_like"
                             android:textColor="#FFFFFF" />
 
                         <ImageButton
@@ -166,7 +151,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="5dp"
-                            android:text="2"
+                            android:text="@string/movie_dislike"
                             android:textColor="#FFFFFF" />
                     </LinearLayout>
                 </LinearLayout>
@@ -205,7 +190,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="5"
+                            android:text="@string/movie_rank"
                             android:textStyle="bold" />
 
                         <TextView
@@ -220,7 +205,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="1.8"
+                            android:text="@string/movie_share"
                             android:textStyle="bold" />
 
                         <TextView
@@ -268,7 +253,7 @@
                             android:layout_width="30dp"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="5.0"
+                            android:text="@string/movie_ratingscore"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -295,7 +280,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="840000"
+                        android:text="@string/movie_accmulate"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
@@ -358,7 +343,7 @@
                         android:id="@+id/movieinfo_tv_director"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="윤종빈"
+                        android:text="@string/movie_director"
                         android:textSize="14dp" />
 
                 </LinearLayout>
@@ -378,7 +363,7 @@
                         android:id="@+id/movieinfo_tv_actor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="하정우(도치), 강동원(조윤)"
+                        android:text="@string/movie_actor"
                         android:textSize="14dp" />
 
                 </LinearLayout>
@@ -434,10 +419,10 @@
                             android:id="@+id/movieinfo_tv_write"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:drawableLeft="@drawable/ic_review_selected"
+                            android:drawableStart="@drawable/ic_review_selected"
                             android:gravity="right"
                             android:onClick="@{fragment::onWriteClick}"
-                            android:text="작성하기" />
+                            android:text="@string/movie_write" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -458,7 +443,7 @@
                     android:background="@drawable/layer_button_purple_border"
                     android:onClick="@{fragment::onAllViewClick}"
                     android:padding="20dp"
-                    android:text="모두 보기" />
+                    android:text="@string/movie_allview" />
 
             </LinearLayout>
 
@@ -488,7 +473,7 @@
                     android:layout_height="58dp"
                     android:layout_margin="10dp"
                     android:background="#e90101"
-                    android:text="예매하기"
+                    android:text="@string/movie_reserve"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 

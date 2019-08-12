@@ -19,6 +19,30 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="comment_toolbar_title">한줄평 목록</string>
+    <string name="movie_title">군도</string>
+    <string name="movie_ratingscore">6.0</string>
+    <string name="movie_commentnum">10</string>
+    <string name="movie_oneline_evaluation">한줄평</string>
+    <string name="movie_write">작성하기</string>
+    <string name="movie_writehint">100자 이내로 작성해주세요.</string>
+    <string name="movie_comment_save">저장</string>
+    <string name="movie_comment_cancel">취소</string>
+    <string name="movie_id">1</string>
+    <string name="movie_share">61.6</string>
+    <string name="movie_d_day">D-1</string>
+    <string name="movie_detailbtn">상세보기</string>
+    <string name="movie_open_date">2014.07.23</string>
+    <string name="movie_genere">액션</string>
+    <string name="movie_runningtime">137분</string>
+    <string name="movie_like">15</string>
+    <string name="movie_dislike">2</string>
+    <string name="movie_rank">5</string>
+    <string name="movie_accmulate">840000</string>
+    <string name="movie_director">윤종빈</string>
+    <string name="movie_actor">하정우(도치), 강동원(조윤)</string>
+    <string name="movie_allview">모두 보기</string>
+    <string name="movie_reserve">예매하기</string>
 
 
 </resources>
