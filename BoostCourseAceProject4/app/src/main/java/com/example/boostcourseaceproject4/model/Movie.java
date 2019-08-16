@@ -1,5 +1,8 @@
 package com.example.boostcourseaceproject4.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /*
@@ -16,7 +19,7 @@ import java.io.Serializable;
 "thumb": "http://movie2.phinf.naver.net/20171107_251/1510033896133nWqxG_JPEG/movie_image.jpg?type=m99_141_2",
 "image": "http://movie.phinf.naver.net/20171107_251/1510033896133nWqxG_JPEG/movie_image.jpg"
 * */
-public class Movie implements Serializable{
+public class Movie implements Parcelable {
 
     public int id;
     public String title;
@@ -144,4 +147,52 @@ public class Movie implements Serializable{
     public void setImage(String image) {
         this.image = image;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.title_eng);
+        dest.writeString(this.data);
+        dest.writeFloat(this.user_rating);
+        dest.writeFloat(this.audience_rating);
+        dest.writeFloat(this.reviewer_rating);
+        dest.writeFloat(this.reservation_rate);
+        dest.writeInt(this.reservation_grade);
+        dest.writeInt(this.grade);
+        dest.writeString(this.thumb);
+        dest.writeString(this.image);
+    }
+
+    protected Movie(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.title_eng = in.readString();
+        this.data = in.readString();
+        this.user_rating = in.readFloat();
+        this.audience_rating = in.readFloat();
+        this.reviewer_rating = in.readFloat();
+        this.reservation_rate = in.readFloat();
+        this.reservation_grade = in.readInt();
+        this.grade = in.readInt();
+        this.thumb = in.readString();
+        this.image = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

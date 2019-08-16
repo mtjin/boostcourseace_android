@@ -47,8 +47,8 @@ public class CommentTotalActivity extends AppCompatActivity {
     //인텐트 수신 처리
     private void processIntent() {
         Intent intent = getIntent();
-        commentList = (ArrayList<Comment>) intent.getSerializableExtra(COMMENT_LIST_EXTRA);
-        movieInfo = (MovieInfo) intent.getSerializableExtra(MOVIEINFO_EXTRA);
+        commentList =intent.getParcelableArrayListExtra(COMMENT_LIST_EXTRA);
+        movieInfo = (MovieInfo) intent.getParcelableExtra(MOVIEINFO_EXTRA);
         commentAdapter = new CommentAdapter(commentList, getApplicationContext());
         binding.commenttotalLivCommentlist.setAdapter(commentAdapter);//리스트뷰 어댑터연결
         binding.commenttotalRbRating.setRating(movieInfo.getUser_rating());
@@ -85,7 +85,7 @@ public class CommentTotalActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == WRITE_REQUEST && resultCode == RESULT_OK) { //작성하기결과
-            Comment comment = (Comment) data.getSerializableExtra(COMMENT_EXTRA);
+            Comment comment = (Comment) data.getParcelableExtra(COMMENT_EXTRA);
             if (comment != null) {
                 commentAdapter.addItemFirst(comment);
                 commentAdapter.notifyDataSetChanged();
@@ -93,6 +93,5 @@ public class CommentTotalActivity extends AppCompatActivity {
                 Log.d(TAG, "작성하기 RESULT 실패");
             }
         }
-
     }
 }

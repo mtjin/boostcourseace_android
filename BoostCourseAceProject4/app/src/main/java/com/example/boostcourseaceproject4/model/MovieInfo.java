@@ -1,5 +1,8 @@
 package com.example.boostcourseaceproject4.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /*"result": [
@@ -28,7 +31,7 @@ import java.io.Serializable;
         "dislike": 421
         }
         ]*/
-public class MovieInfo implements Serializable {
+public class MovieInfo extends MovieInfoList implements Parcelable {
     public String title;
     public int id;
     public String date;
@@ -255,4 +258,72 @@ public class MovieInfo implements Serializable {
     public void setDislike(int dislike) {
         this.dislike = dislike;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeInt(this.id);
+        dest.writeString(this.date);
+        dest.writeFloat(this.user_rating);
+        dest.writeFloat(this.audience_rating);
+        dest.writeFloat(this.reviewer_rating);
+        dest.writeFloat(this.reservation_rate);
+        dest.writeInt(this.reservation_grade);
+        dest.writeInt(this.grade);
+        dest.writeString(this.thumb);
+        dest.writeString(this.image);
+        dest.writeString(this.photos);
+        dest.writeString(this.videos);
+        dest.writeString(this.outlinks);
+        dest.writeString(this.genre);
+        dest.writeInt(this.duration);
+        dest.writeInt(this.audience);
+        dest.writeString(this.synopsis);
+        dest.writeString(this.director);
+        dest.writeString(this.actor);
+        dest.writeInt(this.like);
+        dest.writeInt(this.dislike);
+    }
+
+    protected MovieInfo(Parcel in) {
+        this.title = in.readString();
+        this.id = in.readInt();
+        this.date = in.readString();
+        this.user_rating = in.readFloat();
+        this.audience_rating = in.readFloat();
+        this.reviewer_rating = in.readFloat();
+        this.reservation_rate = in.readFloat();
+        this.reservation_grade = in.readInt();
+        this.grade = in.readInt();
+        this.thumb = in.readString();
+        this.image = in.readString();
+        this.photos = in.readString();
+        this.videos = in.readString();
+        this.outlinks = in.readString();
+        this.genre = in.readString();
+        this.duration = in.readInt();
+        this.audience = in.readInt();
+        this.synopsis = in.readString();
+        this.director = in.readString();
+        this.actor = in.readString();
+        this.like = in.readInt();
+        this.dislike = in.readInt();
+    }
+
+    public static final Parcelable.Creator<MovieInfo> CREATOR = new Parcelable.Creator<MovieInfo>() {
+        @Override
+        public MovieInfo createFromParcel(Parcel source) {
+            return new MovieInfo(source);
+        }
+
+        @Override
+        public MovieInfo[] newArray(int size) {
+            return new MovieInfo[size];
+        }
+    };
 }

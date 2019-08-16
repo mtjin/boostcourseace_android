@@ -2,8 +2,10 @@ package com.example.boostcourseaceproject4.fragment;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -21,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.boostcourseaceproject4.R;
+import com.example.boostcourseaceproject4.databinding.FragmentMovieBinding;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
 import com.example.boostcourseaceproject4.model.MovieInfo;
@@ -31,18 +34,18 @@ import com.google.gson.Gson;
 
 //영화 군도
 public class MovieFragment extends Fragment {
-    //xml
-    private Button detailButton; //상세보기 버튼
-    private TextView movieNumTextView; //영화번호
-    private TextView titleTextView; //영화제목
-    private TextView reservedRateTextView; //예매율
-    private TextView gradeTextView; //관람등급
-    private ImageView posterImageView;
+    //binding
+    FragmentMovieBinding layout;
     //value
     private Movie movie;
-    private MovieFragmentListener movieFragmentListener;
+    private MovieFragmentListener movieFragmentListener; //영화자세히보기 리스너
     //key
     final static String MOVIE_EXTRA = "MOVIE_EXTRA";
+
+    public MovieFragment() {
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -50,40 +53,32 @@ public class MovieFragment extends Fragment {
             movieFragmentListener = (MovieFragmentListener) context;
         }
     }
-    public MovieFragment() {
 
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movie, container, false);
-        detailButton = rootView.findViewById(R.id.movie_btn_detailview);
-        movieNumTextView = rootView.findViewById(R.id.movie_tv_num);
-        titleTextView = rootView.findViewById(R.id.movie_tv_title);
-        reservedRateTextView = rootView.findViewById(R.id.movie_tv_reservedrate);
-        gradeTextView = rootView.findViewById(R.id.movie_tv_grade);
-        posterImageView = rootView.findViewById(R.id.movie_iv_image);
-        detailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                movieFragmentListener.onDetailButtonClicked(movie.getId());
-            }
-        });
+        layout = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false);
+        layout.setFragment(this); //위와같이 정의한것을 세팅해줌(가져와줌)
         init();
-        return rootView;
+        return layout.getRoot();
+    }
+
+    //영화 자세히보기 버튼 클릭 이벤트
+    public void onDetatilViewClick(View view){
+        Log.d("DDDD" , movie.getId()+"");
+        movieFragmentListener.onDetailButtonClicked(movie.getId());
     }
 
     //값 초기화 및 세팅
     public void init() {
         Bundle bundle = getArguments();
-        movie = (Movie) bundle.getSerializable(MOVIE_EXTRA);
-
-        movieNumTextView.setText(movie.getId() + "");
-        titleTextView.setText(movie.getTitle());
-        reservedRateTextView.setText(movie.getReservation_rate() + "");
-        gradeTextView.setText(movie.getGrade() + "");
+        movie = (Movie) bundle.getParcelable(MOVIE_EXTRA);
+        layout.movieTvNum.setText(movie.getId() + "");
+        layout.movieTvTitle.setText(movie.getTitle());
+        layout.movieTvReservedrate.setText(movie.getReservation_rate() + "");
+        layout.movieTvGrade.setText(movie.getGrade() + "");
         if (movie.getImage() != null) {
-            Glide.with(getActivity()).load(movie.getImage()).into(posterImageView);
+            Glide.with(getActivity()).load(movie.getImage()).into(layout.movieIvImage);
         }
     }
 }

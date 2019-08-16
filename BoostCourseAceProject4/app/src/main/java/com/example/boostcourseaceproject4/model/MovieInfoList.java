@@ -28,7 +28,7 @@ import java.util.ArrayList;
         }
         ]*/
 
-public class MovieInfoList {
+public class MovieInfoList extends ResponseMovieInfo{
     //public MovieInfo_Detail result = new MovieInfo_Detail();
     public ArrayList<MovieInfo> result = new ArrayList<MovieInfo>();
 }

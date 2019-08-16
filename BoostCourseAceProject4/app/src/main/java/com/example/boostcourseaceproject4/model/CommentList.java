@@ -14,6 +14,6 @@ import java.util.ArrayList;
         "contents": "헉 넘나 재밌어용하하하",
         "recommend": 0
         },*/
-public class CommentList {
+public class CommentList extends ResponseComment{
     public ArrayList<Comment> result = new ArrayList<Comment>();
 }

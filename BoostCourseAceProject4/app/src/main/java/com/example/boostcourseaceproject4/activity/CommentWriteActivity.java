@@ -67,7 +67,7 @@ public class CommentWriteActivity extends AppCompatActivity {
 
     private void processIntent() {
         Intent resultIntent = getIntent();
-        movieInfo = (MovieInfo) resultIntent.getSerializableExtra(MOVIEINFO_EXTRA);
+        movieInfo = (MovieInfo) resultIntent.getParcelableExtra(MOVIEINFO_EXTRA);
         if (resultIntent != null) {
             String title = movieInfo.getTitle();
             int grade = movieInfo.getGrade();

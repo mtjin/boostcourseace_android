@@ -1,5 +1,8 @@
 package com.example.boostcourseaceproject4.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /*"result": [
@@ -14,7 +17,7 @@ import java.io.Serializable;
         "contents": "헉 넘나 재밌어용하하하",
         "recommend": 0
         },*/
-public class Comment implements Serializable {
+public class Comment  extends CommentList implements Parcelable {
     public int id;
     public String writer;
     public int movieId;
@@ -91,4 +94,42 @@ public class Comment implements Serializable {
     public void setRecommend(int recommend) {
         this.recommend = recommend;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.writer);
+        dest.writeInt(this.movieId);
+        dest.writeString(this.time);
+        dest.writeFloat(this.rating);
+        dest.writeString(this.contents);
+        dest.writeInt(this.recommend);
+    }
+
+    protected Comment(Parcel in) {
+        this.id = in.readInt();
+        this.writer = in.readString();
+        this.movieId = in.readInt();
+        this.time = in.readString();
+        this.rating = in.readFloat();
+        this.contents = in.readString();
+        this.recommend = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
+        @Override
+        public Comment createFromParcel(Parcel source) {
+            return new Comment(source);
+        }
+
+        @Override
+        public Comment[] newArray(int size) {
+            return new Comment[size];
+        }
+    };
 }

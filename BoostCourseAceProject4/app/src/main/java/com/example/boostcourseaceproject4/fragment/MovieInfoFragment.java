@@ -30,7 +30,9 @@ import com.example.boostcourseaceproject4.databinding.FragmentMovieInfoBinding;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.CommentList;
 import com.example.boostcourseaceproject4.model.MovieInfo;
+import com.example.boostcourseaceproject4.model.MovieInfoList;
 import com.example.boostcourseaceproject4.model.ResponseComment;
+import com.example.boostcourseaceproject4.model.ResponseMovieInfo;
 import com.example.boostcourseaceproject4.utils.NetworkHelper;
 import com.google.gson.Gson;
 
@@ -45,6 +47,7 @@ public class MovieInfoFragment extends Fragment {
     //binding
     FragmentMovieInfoBinding layout;
     //value
+    private int movieId;
     private boolean likeState = false;
     private boolean disLikeState = false;
     private int likeCount = 0;
@@ -63,6 +66,7 @@ public class MovieInfoFragment extends Fragment {
     final static String COMMENT_EXTRA = "COMMENT_EXTRA";
     final static String COMMENT_LIST_EXTRA = "COMMENT_LIST_EXTRA";
     final static String MOVIEINFO_EXTRA = "MOVIEINFO_EXTRA";
+    final static String MOVIEID_EXTRA = "MOVIEID_EXTRA";
 
     public MovieInfoFragment() {
     }
@@ -70,7 +74,6 @@ public class MovieInfoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -81,13 +84,13 @@ public class MovieInfoFragment extends Fragment {
         //스크롤뷰안의 리스트뷰 스크롤은  android:nestedScrollingEnabled ="true"로 할 수 있으나 API21이전 기기에서는 작동을 안하므로 다음 코드를 추가해주었다.
         ViewCompat.setNestedScrollingEnabled(layout.movieinfoLivComments, true);
         processBundle();
-        initView();
+        requestComment(); //댓글 요청
+        requestMovieInfo(); //영화상세정보 요청
         return layout.getRoot();
     }
 
     //뷰초기화
     private void initView() {
-        MainActivity.toolbar.setTitle("영화 상세");
         Glide.with(this).load(movieInfo.getThumb()).into(layout.movieinfoIvPoster);
         layout.movieinfoTvTitle.setText(movieInfo.getTitle());
         layout.movieinfoTvDates.setText(movieInfo.getDate());
@@ -101,8 +104,8 @@ public class MovieInfoFragment extends Fragment {
         layout.movieinfoTvContent.setText(movieInfo.getSynopsis());
         layout.movieinfoTvDirector.setText(movieInfo.getDirector());
         layout.movieinfoTvActor.setText(movieInfo.getActor());
-        layout.movieinfoTvLikecount.setText(movieInfo.getLike()+"");
-        layout.movieinfoTvDislikecount.setText(movieInfo.getDislike()+"");
+        layout.movieinfoTvLikecount.setText(movieInfo.getLike() + "");
+        layout.movieinfoTvDislikecount.setText(movieInfo.getDislike() + "");
         likeCount = movieInfo.getLike();
         disLikeCount = movieInfo.getDislike();
         //댓글 서버에게 요청
@@ -111,8 +114,9 @@ public class MovieInfoFragment extends Fragment {
 
     //전달받은 번들 값 처리
     private void processBundle() {
-        Bundle bundle = this.getArguments();
-        movieInfo = (MovieInfo) bundle.getSerializable(MOVIEINFO_EXTRA);
+        Bundle bundle = getArguments();
+        movieId = bundle.getInt(MOVIEID_EXTRA, -1);
+        Log.d(TAG , "전달받은 영화 아이디 => " + movieId);
     }
 
     //좋아요클릭
@@ -196,9 +200,9 @@ public class MovieInfoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == WRITE_REQUEST && resultCode == getActivity().RESULT_OK) {
-            Comment comment = (Comment) data.getSerializableExtra(COMMENT_EXTRA);
+            Comment comment = (Comment) data.getParcelableExtra(COMMENT_EXTRA);
             if (comment != null) {
-               commentAdapter.addItemFirst(comment);
+                commentAdapter.addItemFirst(comment);
                 commentAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "작성하기 RESULT 실패");
@@ -206,72 +210,30 @@ public class MovieInfoFragment extends Fragment {
         } else if (requestCode == TOTAL_REQUEST && resultCode == getActivity().RESULT_OK) { //댓글전체보기 결과
             commentArrayList.clear();
             commentAdapter.clear();
-            commentArrayList = (ArrayList<Comment>) data.getSerializableExtra(COMMENT_LIST_EXTRA);
-            commentAdapter.addAll((ArrayList<Comment>) data.getSerializableExtra(COMMENT_LIST_EXTRA));
+            commentArrayList = data.getParcelableArrayListExtra(COMMENT_LIST_EXTRA);
+            commentAdapter.addAll(data.<Comment>getParcelableArrayListExtra(COMMENT_LIST_EXTRA));
             commentAdapter.notifyDataSetChanged();
-        }
-    }
-
-    //서버 댓글 불러오기 요청
-    private void requestComment() {
-        String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port +
-                "/movie/readCommentList?id=";
-        url += movieInfo.getId() + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
-        Log.d(TAG, url + "");
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        processCommentResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("에러(영화상세정보 댓글)", "요청못받음");
-                        Log.d("에러(영화상세정보 댓글)", error + "");
-                    }
-                }
-        );
-        request.setShouldCache(false);
-        NetworkHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
-    }
-
-    //서버로부터 댓글 받고처리
-    private void processCommentResponse(String response) {
-        Gson gson = new Gson();
-        ResponseComment info = gson.fromJson(response, ResponseComment.class);
-        if (info.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
-
-            CommentList commentList = gson.fromJson(response, CommentList.class);  //result부분 json속성값들 자바객체 값에 담게 변환시켜줌
-            //   Comment comment = commentList.result.get(i);
-            //    commentAdapter.addItem(commentList.result.get(i));
-            commentArrayList.addAll(commentList.result);
-            commentAdapter = new CommentAdapter(commentArrayList, getActivity());
-            layout.movieinfoLivComments.setAdapter(commentAdapter);//리스트뷰 어댑터연결
         }
     }
 
     //좋아요, 싫어요 서버에 전송 및 저장
     private void sendLikeRequest() {
-        Log.d(TAG ,"좋아요, 싫어요 서버에 전송 및 저장");
+        Log.d(TAG, "좋아요, 싫어요 서버에 전송 및 저장");
         String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/increaseLikeDisLike";
-        Log.d(TAG ,"좋아요싫어요 url : " + url);
+        Log.d(TAG, "좋아요싫어요 url : " + url);
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
                 new Response.Listener<String>() {  //응답을 문자열로 받아서 여기다 넣어달란말임(응답을 성공적으로 받았을 떄 이메소드가 자동으로 호출됨
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG ,"좋아요싫어요 응답 성공");
+                        Log.d(TAG, "좋아요싫어요 응답 성공");
                     }
                 },
                 new Response.ErrorListener() { //에러발생시 호출될 리스너 객체
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG ,"좋아요싫어요 응답 에러");
+                        Log.d(TAG, "좋아요싫어요 응답 에러");
                     }
                 }
         ) {
@@ -279,7 +241,7 @@ public class MovieInfoFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id", movieInfo.getId() + "");
-                Log.d(TAG , "영화 아이디 : " + movieInfo.getId());
+                Log.d(TAG, "영화 아이디 : " + movieInfo.getId());
                 if (likeCancel) {
                     params.put("likeyn", "N");
                     Log.i(TAG, "좋아요 취소");
@@ -299,6 +261,87 @@ public class MovieInfoFragment extends Fragment {
 
         request.setShouldCache(false);
         NetworkHelper.requestQueue.add(request);
+    }
+
+    //id값에 해당하는 영화 상세정보 요청
+    public void requestMovieInfo() {
+        if (movieId == -1) {
+            Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+        } else {
+            String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/readMovie?id=";
+            url += movieId; //파리미터도 추가해줌
+
+            StringRequest request = new StringRequest(
+                    Request.Method.GET,
+                    url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            processMovieInfoResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("TAG", "영화 상세정보 요청못받음");
+                        }
+                    }
+            );
+            request.setShouldCache(false);
+            NetworkHelper.requestQueue.add(request);
+        }
+    }
+
+    //영화상세정보 요청 응답
+    public void processMovieInfoResponse(String response) {
+        Gson gson = new Gson();
+        MovieInfo movieInfo = gson.fromJson(response, MovieInfo.class);
+        if (movieInfo.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+            this.movieInfo = movieInfo.result.get(0);
+            initView(); //뷰초기화
+        }
+    }
+
+    //댓글 불러오기 요청
+    private void requestComment() {
+        if (movieId == -1) {
+            Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+        } else {
+            String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port +
+                    "/movie/readCommentList?id=";
+            url += movieId + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
+            Log.d(TAG, url + "");
+            StringRequest request = new StringRequest(
+                    Request.Method.GET,
+                    url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            processCommentResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("에러(영화상세정보 댓글)", "요청못받음");
+                            Log.d("에러(영화상세정보 댓글)", error + "");
+                        }
+                    }
+            );
+            request.setShouldCache(false);
+            NetworkHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+        }
+    }
+
+    //댓글 요청응답
+    private void processCommentResponse(String response) {
+        Gson gson = new Gson();
+        Comment comment = gson.fromJson(response, Comment.class);
+        if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+            commentArrayList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
+            commentAdapter = new CommentAdapter(commentArrayList, getActivity());
+            layout.movieinfoLivComments.setAdapter(commentAdapter);//리스트뷰 어댑터연결
+        }
     }
 
     @Override
