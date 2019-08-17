@@ -18,6 +18,7 @@ import com.example.boostcourseaceproject4.databinding.ActivityCommentWriteBindin
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.MovieInfo;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
+import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,18 +48,22 @@ public class CommentWriteActivity extends AppCompatActivity {
 
     //저장버튼클릭
     public void onOkClick(View view) {
-        String message = binding.commentwriteEtWrite.getText().toString().trim();
-        float rating = binding.commentwriteRbRating.getRating();
-        if (message.length() <= 0) {
-            Toast.makeText(this, "한글자 이상 적어주세요", Toast.LENGTH_SHORT).show();
-        } else {
-            //작성시간 put
-            Calendar time = Calendar.getInstance();
-            String format_time1 = format1.format(time.getTime());
-            comment = new Comment(-1, "이이22", id, format_time1, rating, message, 0);
-            sendWriteRequest();
-            setResult(RESULT_OK);
-            finish();
+        if(NetworkStatusHelper.getConnectivityStatus(getApplicationContext())) {
+            String message = binding.commentwriteEtWrite.getText().toString().trim();
+            float rating = binding.commentwriteRbRating.getRating();
+            if (message.length() <= 0) {
+                Toast.makeText(this, "한글자 이상 적어주세요", Toast.LENGTH_SHORT).show();
+            } else {
+                //작성시간 put
+                Calendar time = Calendar.getInstance();
+                String format_time1 = format1.format(time.getTime());
+                comment = new Comment(-1, "이이22", id, format_time1, rating, message, 0);
+                sendWriteRequest();
+                setResult(RESULT_OK);
+                finish();
+            }
+        }else{
+            Toast.makeText(this, "인터넷 연결이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 

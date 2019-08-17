@@ -16,12 +16,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.adapter.MoviePagerAdapter;
+import com.example.boostcourseaceproject4.db.AppDatabase;
 import com.example.boostcourseaceproject4.fragment.MovieFragment;
 import com.example.boostcourseaceproject4.fragment.MovieInfoFragment;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
 import com.example.boostcourseaceproject4.model.MovieList;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
+import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity
         //어댑터에 추가
         moviePagerAdapter = new MoviePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(moviePagerAdapter);
+        //데이터베이스 오픈
+        AppDatabase.openDatabase(getApplicationContext(), "CinemaApp");
         //리퀘스트큐 생성
         if (NetworkRequestHelper.requestQueue == null) {
             NetworkRequestHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -87,33 +91,41 @@ public class MainActivity extends AppCompatActivity
         requestMovieList(); //서버에 영화 정보 요청
     }
 
-    //영화 리스트 불러오기
+    //영화  불러오기 요청
     public void requestMovieList() {
-        String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovieList";
-        url += "?" + "type=1"; //파리미터도 추가해줌
+        if(NetworkStatusHelper.getConnectivityStatus(getApplicationContext())) { //인터넷 연결 상태인 경우
+            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovieList";
+            url += "?" + "type=1"; //파리미터도 추가해줌
 
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        processMovieListResponse(response);
+            StringRequest request = new StringRequest(
+                    Request.Method.GET,
+                    url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            processMovieListResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "영화 요청못받음");
+                        }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "영화 요청못받음");
-                    }
-                }
-        );
-        //캐시제거(매번 다시불러오게함)
-        request.setShouldCache(false);
-        NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+            );
+            //캐시제거(매번 다시불러오게함)
+            request.setShouldCache(false);
+            NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+        }else{ //인터넷 연결 끊킨 경우 디비에서 불러오기
+            String movieJson = AppDatabase.selectMovieJsonData();
+            if(movieJson != null){
+                processMovieListResponse(movieJson);
+                Toast.makeText(this, "DB로부터 영화 불러왔습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
-    //영화  불러오기
+    //영화 불러오기 응답
     public void processMovieListResponse(String response) {
         Gson gson = new Gson();
         //TODO: 리뷰 => json으로 두번 파싱할 필요없이, ResponseMovie를 MovieList가 상속받으면 한번의 파싱으로 해결이 됩니다.
@@ -131,6 +143,8 @@ public class MainActivity extends AppCompatActivity
                // requestMovieInfo(movie.getId());
             }
             moviePagerAdapter.notifyDataSetChanged();
+            //데이터베이스에 해당 json을 넣어준다.
+            AppDatabase.insertMovieJson(1, response);
         }
     }
 

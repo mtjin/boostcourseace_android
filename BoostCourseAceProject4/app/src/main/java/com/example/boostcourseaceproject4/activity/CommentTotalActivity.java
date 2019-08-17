@@ -18,9 +18,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.boostcourseaceproject4.adapter.CommentAdapter;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.databinding.ActivityCommentTotalBinding;
+import com.example.boostcourseaceproject4.db.AppDatabase;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.MovieInfo;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
+import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -108,6 +110,7 @@ public class CommentTotalActivity extends AppCompatActivity {
 
     //댓글 불러오기 요청
     private void requestComment() {
+        if (NetworkStatusHelper.getConnectivityStatus(getApplicationContext())) {
             String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port +
                     "/movie/readCommentList?id=";
             url += movieInfo.getId() + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
@@ -131,6 +134,11 @@ public class CommentTotalActivity extends AppCompatActivity {
             );
             request.setShouldCache(false);
             NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+        }else{
+            String commentJson = AppDatabase.selectCommentJsonData(movieInfo.getId());
+            processCommentResponse(commentJson);
+            Toast.makeText(this, "DB로부터 댓글을 불러왔습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //댓글 요청응답
@@ -143,6 +151,7 @@ public class CommentTotalActivity extends AppCompatActivity {
             commentList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
             commentAdapter.notifyDataSetChanged();
             binding.commenttotalTvParticipation.setText(commentList.size()+"");
+            AppDatabase.insertCommentJson(movieInfo.getId(), response);
         }
     }
 }

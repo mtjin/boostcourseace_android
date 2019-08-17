@@ -27,9 +27,11 @@ import com.example.boostcourseaceproject4.activity.CommentTotalActivity;
 import com.example.boostcourseaceproject4.activity.CommentWriteActivity;
 import com.example.boostcourseaceproject4.adapter.CommentAdapter;
 import com.example.boostcourseaceproject4.databinding.FragmentMovieInfoBinding;
+import com.example.boostcourseaceproject4.db.AppDatabase;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.MovieInfo;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
+import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -118,76 +120,83 @@ public class MovieInfoFragment extends Fragment {
     private void processBundle() {
         Bundle bundle = getArguments();
         movieId = bundle.getInt(MOVIEID_EXTRA, -1);
-        Log.d(TAG , "전달받은 영화 아이디 => " + movieId);
+        Log.d(TAG, "전달받은 영화 아이디 => " + movieId);
     }
 
     //좋아요클릭
     public void onLikeClick(View view) {
-        if (likeState) {//좋아요 취소
-            likeCount -= 1;
-            layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
-            layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.selector_thumbs_up);
-            likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
-            likeCancel = true;
-            dislikeUp = false;
-            dislikeCancel = false;
-        } else {  //좋아요
-            if (disLikeState) { //싫어요 눌러져있는 경우 취소하고 좋아요
-                disLikeCount -= 1;
-                layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
-                layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.selector_thumbs_down);
-                disLikeState = false;
-            }
-            likeCount += 1;
-            layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
-            layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.ic_thumb_up_selected);
-            likeUp = true;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
-            likeCancel = false;
-            dislikeUp = false;
-            dislikeCancel = false;
+        if (NetworkStatusHelper.getConnectivityStatus(getContext())) { //인터넷 연결 되있을 경우
+            if (likeState) {//좋아요 취소
+                likeCount -= 1;
+                layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
+                layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.selector_thumbs_up);
+                likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
+                likeCancel = true;
+                dislikeUp = false;
+                dislikeCancel = false;
+            } else {  //좋아요
+                if (disLikeState) { //싫어요 눌러져있는 경우 취소하고 좋아요
+                    disLikeCount -= 1;
+                    layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
+                    layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.selector_thumbs_down);
+                    disLikeState = false;
+                }
+                likeCount += 1;
+                layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
+                layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.ic_thumb_up_selected);
+                likeUp = true;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
+                likeCancel = false;
+                dislikeUp = false;
+                dislikeCancel = false;
 
+            }
+            likeState = !likeState;
+            sendLikeRequest();
+        } else { //인터넷 연결 안되있을 경우
+            Toast.makeText(getContext(), "인터넷이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
         }
-        likeState = !likeState;
-        sendLikeRequest();
     }
 
     //싫어요클릭
     public void onDislikeClick(View view) {
-        if (disLikeState) { //싫어요 취소
-            disLikeCount -= 1;
-            layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
-            layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.selector_thumbs_down);
-            likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
-            likeCancel = false;
-            dislikeUp = false;
-            dislikeCancel = true;
-        } else { //싫어요
-            if (likeState) { //좋아요 눌러져있던 경우 취소하고 싫어요
-                likeCount -= 1;
-                layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
-                layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.selector_thumbs_up);
-                likeState = false;
+        if (NetworkStatusHelper.getConnectivityStatus(getContext())) { //인터넷 연결 되있을 경우
+            if (disLikeState) { //싫어요 취소
+                disLikeCount -= 1;
+                layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
+                layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.selector_thumbs_down);
+                likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
+                likeCancel = false;
+                dislikeUp = false;
+                dislikeCancel = true;
+            } else { //싫어요
+                if (likeState) { //좋아요 눌러져있던 경우 취소하고 싫어요
+                    likeCount -= 1;
+                    layout.movieinfoTvLikecount.setText(String.valueOf(likeCount));
+                    layout.movieinfoIbtnLikeup.setBackgroundResource(R.drawable.selector_thumbs_up);
+                    likeState = false;
+                }
+                disLikeCount += 1;
+                layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
+                layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.ic_thumb_down_selected);
+                likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
+                likeCancel = false;
+                dislikeUp = true;
+                dislikeCancel = false;
             }
-            disLikeCount += 1;
-            layout.movieinfoTvDislikecount.setText(String.valueOf(disLikeCount));
-            layout.movieinfoIbtnDislikeup.setBackgroundResource(R.drawable.ic_thumb_down_selected);
-            likeUp = false;   //좋아요 싫어요 적용여부에 따른 서버 전송 및 저장을 위해 사용되는 플래그
-            likeCancel = false;
-            dislikeUp = true;
-            dislikeCancel = false;
+            disLikeState = !disLikeState;
+            sendLikeRequest();
+        } else { //인터넷 연결 안되있을 경우
+            Toast.makeText(getContext(), "인터넷이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
         }
-        disLikeState = !disLikeState;
-        sendLikeRequest();
     }
 
 
     //댓글모두보기 버튼 클릭
     public void onAllViewClick(View view) {
-     //   Toast.makeText(getActivity(), "모두보기", Toast.LENGTH_SHORT).show();
         Intent totalCommentIntent = new Intent(getActivity(), CommentTotalActivity.class);
-    //    totalCommentIntent.putExtra(COMMENT_LIST_EXTRA, commentArrayList); //댓글리스트 전달
         totalCommentIntent.putExtra(MOVIEINFO_EXTRA, movieInfo); //영화 정보전달(뷰 세팅과 id값 하는데 사용)
         startActivityForResult(totalCommentIntent, TOTAL_REQUEST);
+        Toast.makeText(getContext(), "모두보기", Toast.LENGTH_SHORT).show();
     }
 
     //작성하기 버튼 클릭
@@ -210,9 +219,7 @@ public class MovieInfoFragment extends Fragment {
 
     //좋아요, 싫어요 서버에 전송 및 저장
     private void sendLikeRequest() {
-        Log.d(TAG, "좋아요, 싫어요 서버에 전송 및 저장");
         String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/increaseLikeDisLike";
-        Log.d(TAG, "좋아요싫어요 url : " + url);
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
@@ -253,35 +260,39 @@ public class MovieInfoFragment extends Fragment {
 
         request.setShouldCache(false);
         NetworkRequestHelper.requestQueue.add(request);
+
     }
 
     //id값에 해당하는 영화 상세정보 요청
     public void requestMovieInfo() {
-        if (movieId == -1) {
-            Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
-        } else {
-            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovie?id=";
-            url += movieId; //파리미터도 추가해줌
+            if(NetworkStatusHelper.getConnectivityStatus(getContext())) { //인터넷 연결 안되있을 경우
+                String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovie?id=";
+                url += movieId; //파리미터도 추가해줌
 
-            StringRequest request = new StringRequest(
-                    Request.Method.GET,
-                    url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            processMovieInfoResponse(response);
+                StringRequest request = new StringRequest(
+                        Request.Method.GET,
+                        url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                processMovieInfoResponse(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("TAG", "영화 상세정보 요청못받음");
+                            }
                         }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("TAG", "영화 상세정보 요청못받음");
-                        }
-                    }
-            );
-            request.setShouldCache(false);
-            NetworkRequestHelper.requestQueue.add(request);
-        }
+                );
+                request.setShouldCache(false);
+                NetworkRequestHelper.requestQueue.add(request);
+            }else{
+                String movieInfoJson = AppDatabase.selectMovieInfoJsonData(movieId);
+                processMovieInfoResponse(movieInfoJson);
+                Toast.makeText(getContext(), "DB로부터 영화 상세정보 불러왔습니다.", Toast.LENGTH_SHORT).show();
+            }
+
     }
 
     //영화상세정보 요청 응답
@@ -291,14 +302,13 @@ public class MovieInfoFragment extends Fragment {
         if (movieInfo.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
             this.movieInfo = movieInfo.result.get(0);
             initView(); //뷰초기화
+            AppDatabase.insertMovieInfoJson(movieId, response);
         }
     }
 
     //댓글 불러오기 요청
     private void requestComment() {
-        if (movieId == -1) {
-            Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
-        } else {
+        if(NetworkStatusHelper.getConnectivityStatus(getContext())) {
             String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port +
                     "/movie/readCommentList?id=";
             url += movieId + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
@@ -322,7 +332,12 @@ public class MovieInfoFragment extends Fragment {
             );
             request.setShouldCache(false);
             NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+        }else{
+            String commentJson = AppDatabase.selectCommentJsonData(movieId);
+            processCommentResponse(commentJson);
+            Toast.makeText(getContext(), "DB로부터 댓글을 불러왔습니다.", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     //댓글 요청응답
@@ -334,6 +349,8 @@ public class MovieInfoFragment extends Fragment {
             commentAdapter.clear();
             commentArrayList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
             commentAdapter.notifyDataSetChanged();
+            //디비삽입
+            AppDatabase.insertCommentJson(movieId, response);
         }
     }
 

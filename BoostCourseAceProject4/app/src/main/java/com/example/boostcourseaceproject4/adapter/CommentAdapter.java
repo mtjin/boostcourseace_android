@@ -15,6 +15,7 @@ import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.modelview.CommentView;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
+import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class CommentAdapter extends BaseAdapter {
         this.items = items;
     }
 
-    public  ArrayList<Comment> getAllItem(){
+    public ArrayList<Comment> getAllItem() {
         return items;
     }
 
@@ -59,6 +60,7 @@ public class CommentAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
     public void addItemFirst(Comment item) {
         items.add(0, item);
     }
@@ -76,19 +78,19 @@ public class CommentAdapter extends BaseAdapter {
         view.setNickNameTextView(item.getWriter());
         view.setCommentTextView(item.getContents());
         view.setRatingBar(item.getRating());
-        view.setTimeTextView(item.getTime()+"");
+        view.setTimeTextView(item.getTime() + "");
         view.setRecommendCountTextView(item.getRecommend());
 
         TextView recommendTextView = view.findViewById(R.id.comment_tv_recommend);
         recommendTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(item.getId() == -1){ //지금 작성한 댓글은 id를 -1로 삽입해서 추천못하게해놨다. (서버에서 id값 부여받기 전이여서, 댓글을 작성하면 또 서버에서 댓글을 불러오는식이아니라  onActivityForResult()로 일단 추가해놓는식으로 했다.
-                    Toast.makeText(context, "방금 작성한 글은 id값을 부여받기전이므로 나갔다와야 추천이 가능합니다.", Toast.LENGTH_SHORT).show();
-                }else{
+                if(NetworkStatusHelper.getConnectivityStatus(context)) {//인터넷 연결된 경우
                     sendRecommendRequest(item.getId());
                     item.setRecommend(item.getRecommend() + 1);
                     notifyDataSetChanged();
+                }else{
+                    Toast.makeText(context, "인터넷이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

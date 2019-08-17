@@ -3,11 +3,6 @@ package com.example.boostcourseaceproject4.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.room.PrimaryKey;
-
-import java.io.Serializable;
-
 /*
  "id": 1,
 "title": "꾼",
@@ -24,8 +19,6 @@ import java.io.Serializable;
 * */
 public class Movie implements Parcelable {
 
-    @PrimaryKey
-    @NonNull
     public int id;
     public String title;
     public String title_eng;

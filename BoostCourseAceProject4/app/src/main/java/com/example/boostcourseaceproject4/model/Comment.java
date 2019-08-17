@@ -3,10 +3,6 @@ package com.example.boostcourseaceproject4.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.room.PrimaryKey;
-
-import java.io.Serializable;
 
 /*"result": [
         {
@@ -21,10 +17,9 @@ import java.io.Serializable;
         "recommend": 0
         },*/
 public class Comment  extends CommentList implements Parcelable {
-
-    @PrimaryKey public int id;
-    @NonNull
+    public int id;
     public String writer;
+    /*  @ColumnInfo(name = "first_name") 으로 컬럼명도 바꿀수 있다.*/
     public int movieId;
     public String time;
     public float rating;
