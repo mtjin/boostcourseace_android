@@ -2,35 +2,21 @@ package com.example.boostcourseaceproject4.fragment;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.databinding.FragmentMovieBinding;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
-import com.example.boostcourseaceproject4.model.MovieInfo;
-import com.example.boostcourseaceproject4.model.MovieInfoList;
-import com.example.boostcourseaceproject4.model.ResponseMovieInfo;
-import com.example.boostcourseaceproject4.utils.NetworkHelper;
-import com.google.gson.Gson;
 
 //영화 군도
 public class MovieFragment extends Fragment {

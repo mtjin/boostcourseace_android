@@ -3,6 +3,9 @@ package com.example.boostcourseaceproject4.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
 /*"result": [
@@ -18,7 +21,9 @@ import java.io.Serializable;
         "recommend": 0
         },*/
 public class Comment  extends CommentList implements Parcelable {
-    public int id;
+
+    @PrimaryKey public int id;
+    @NonNull
     public String writer;
     public int movieId;
     public String time;

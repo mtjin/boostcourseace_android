@@ -1,7 +1,6 @@
 package com.example.boostcourseaceproject4.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,7 +14,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.modelview.CommentView;
-import com.example.boostcourseaceproject4.utils.NetworkHelper;
+import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +97,7 @@ public class CommentAdapter extends BaseAdapter {
 
     //댓글 추천 서버에 전송
     public void sendRecommendRequest(final int id) {
-        String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/increaseRecommend";
+        String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/increaseRecommend";
         StringRequest request = new StringRequest(
                 Request.Method.POST,
                 url,
@@ -122,6 +121,6 @@ public class CommentAdapter extends BaseAdapter {
             }
         };
         request.setShouldCache(false);
-        NetworkHelper.requestQueue.add(request);
+        NetworkRequestHelper.requestQueue.add(request);
     }
 }

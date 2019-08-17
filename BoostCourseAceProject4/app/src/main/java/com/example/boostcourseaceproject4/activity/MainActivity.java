@@ -20,12 +20,8 @@ import com.example.boostcourseaceproject4.fragment.MovieFragment;
 import com.example.boostcourseaceproject4.fragment.MovieInfoFragment;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
-import com.example.boostcourseaceproject4.model.MovieInfo;
-import com.example.boostcourseaceproject4.model.MovieInfoList;
 import com.example.boostcourseaceproject4.model.MovieList;
-import com.example.boostcourseaceproject4.model.ResponseMovie;
-import com.example.boostcourseaceproject4.model.ResponseMovieInfo;
-import com.example.boostcourseaceproject4.utils.NetworkHelper;
+import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 
@@ -33,16 +29,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.Menu;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 //메인액티비티 : 영화목록들을 뷰페이저로 보여주는 역할
 public class MainActivity extends AppCompatActivity
@@ -66,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     //뷰초기화
     public void initView() {
         toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         toolbar.setTitle("영화 목록");
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.main_nav_navigation);
@@ -91,15 +81,15 @@ public class MainActivity extends AppCompatActivity
         moviePagerAdapter = new MoviePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(moviePagerAdapter);
         //리퀘스트큐 생성
-        if (NetworkHelper.requestQueue == null) {
-            NetworkHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
+        if (NetworkRequestHelper.requestQueue == null) {
+            NetworkRequestHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
         requestMovieList(); //서버에 영화 정보 요청
     }
 
     //영화 리스트 불러오기
     public void requestMovieList() {
-        String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/readMovieList";
+        String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovieList";
         url += "?" + "type=1"; //파리미터도 추가해줌
 
         StringRequest request = new StringRequest(
@@ -120,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         );
         //캐시제거(매번 다시불러오게함)
         request.setShouldCache(false);
-        NetworkHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+        NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
     }
 
     //영화  불러오기

@@ -28,12 +28,8 @@ import com.example.boostcourseaceproject4.activity.CommentWriteActivity;
 import com.example.boostcourseaceproject4.adapter.CommentAdapter;
 import com.example.boostcourseaceproject4.databinding.FragmentMovieInfoBinding;
 import com.example.boostcourseaceproject4.model.Comment;
-import com.example.boostcourseaceproject4.model.CommentList;
 import com.example.boostcourseaceproject4.model.MovieInfo;
-import com.example.boostcourseaceproject4.model.MovieInfoList;
-import com.example.boostcourseaceproject4.model.ResponseComment;
-import com.example.boostcourseaceproject4.model.ResponseMovieInfo;
-import com.example.boostcourseaceproject4.utils.NetworkHelper;
+import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -63,7 +59,6 @@ public class MovieInfoFragment extends Fragment {
     final static int WRITE_REQUEST = 11;
     final static int TOTAL_REQUEST = 12;
     //putExtra key
-    final static String COMMENT_EXTRA = "COMMENT_EXTRA";
     final static String COMMENT_LIST_EXTRA = "COMMENT_LIST_EXTRA";
     final static String MOVIEINFO_EXTRA = "MOVIEINFO_EXTRA";
     final static String MOVIEID_EXTRA = "MOVIEID_EXTRA";
@@ -83,9 +78,15 @@ public class MovieInfoFragment extends Fragment {
         layout.setFragment(this); //위와같이 정의한것을 세팅해줌(가져와줌)
         //스크롤뷰안의 리스트뷰 스크롤은  android:nestedScrollingEnabled ="true"로 할 수 있으나 API21이전 기기에서는 작동을 안하므로 다음 코드를 추가해주었다.
         ViewCompat.setNestedScrollingEnabled(layout.movieinfoLivComments, true);
+        //어댑터생성
+        commentAdapter = new CommentAdapter(commentArrayList, getActivity());
+        layout.movieinfoLivComments.setAdapter(commentAdapter);//리스트뷰 어댑터연결
+        //전달받은 인텐트처리
         processBundle();
-        requestComment(); //댓글 요청
-        requestMovieInfo(); //영화상세정보 요청
+        //영화상세정보 요청
+        requestMovieInfo();
+        //댓글요청
+        requestComment();
         return layout.getRoot();
     }
 
@@ -108,7 +109,8 @@ public class MovieInfoFragment extends Fragment {
         layout.movieinfoTvDislikecount.setText(movieInfo.getDislike() + "");
         likeCount = movieInfo.getLike();
         disLikeCount = movieInfo.getDislike();
-        //댓글 서버에게 요청
+        MainActivity.toolbar.setTitle("영화 상세");
+        //댓글 서버 요청
         requestComment();
     }
 
@@ -181,9 +183,9 @@ public class MovieInfoFragment extends Fragment {
 
     //댓글모두보기 버튼 클릭
     public void onAllViewClick(View view) {
-        Toast.makeText(getActivity(), "모두보기", Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(getActivity(), "모두보기", Toast.LENGTH_SHORT).show();
         Intent totalCommentIntent = new Intent(getActivity(), CommentTotalActivity.class);
-        totalCommentIntent.putExtra(COMMENT_LIST_EXTRA, commentArrayList); //댓글리스트 전달
+    //    totalCommentIntent.putExtra(COMMENT_LIST_EXTRA, commentArrayList); //댓글리스트 전달
         totalCommentIntent.putExtra(MOVIEINFO_EXTRA, movieInfo); //영화 정보전달(뷰 세팅과 id값 하는데 사용)
         startActivityForResult(totalCommentIntent, TOTAL_REQUEST);
     }
@@ -200,26 +202,16 @@ public class MovieInfoFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == WRITE_REQUEST && resultCode == getActivity().RESULT_OK) {
-            Comment comment = (Comment) data.getParcelableExtra(COMMENT_EXTRA);
-            if (comment != null) {
-                commentAdapter.addItemFirst(comment);
-                commentAdapter.notifyDataSetChanged();
-            } else {
-                Log.d(TAG, "작성하기 RESULT 실패");
-            }
+            requestComment(); //댓글요청
         } else if (requestCode == TOTAL_REQUEST && resultCode == getActivity().RESULT_OK) { //댓글전체보기 결과
-            commentArrayList.clear();
-            commentAdapter.clear();
-            commentArrayList = data.getParcelableArrayListExtra(COMMENT_LIST_EXTRA);
-            commentAdapter.addAll(data.<Comment>getParcelableArrayListExtra(COMMENT_LIST_EXTRA));
-            commentAdapter.notifyDataSetChanged();
+            requestComment();
         }
     }
 
     //좋아요, 싫어요 서버에 전송 및 저장
     private void sendLikeRequest() {
         Log.d(TAG, "좋아요, 싫어요 서버에 전송 및 저장");
-        String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/increaseLikeDisLike";
+        String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/increaseLikeDisLike";
         Log.d(TAG, "좋아요싫어요 url : " + url);
         StringRequest request = new StringRequest(
                 Request.Method.POST,
@@ -260,7 +252,7 @@ public class MovieInfoFragment extends Fragment {
         };
 
         request.setShouldCache(false);
-        NetworkHelper.requestQueue.add(request);
+        NetworkRequestHelper.requestQueue.add(request);
     }
 
     //id값에 해당하는 영화 상세정보 요청
@@ -268,7 +260,7 @@ public class MovieInfoFragment extends Fragment {
         if (movieId == -1) {
             Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
         } else {
-            String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port + "/movie/readMovie?id=";
+            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovie?id=";
             url += movieId; //파리미터도 추가해줌
 
             StringRequest request = new StringRequest(
@@ -288,7 +280,7 @@ public class MovieInfoFragment extends Fragment {
                     }
             );
             request.setShouldCache(false);
-            NetworkHelper.requestQueue.add(request);
+            NetworkRequestHelper.requestQueue.add(request);
         }
     }
 
@@ -307,7 +299,7 @@ public class MovieInfoFragment extends Fragment {
         if (movieId == -1) {
             Toast.makeText(getContext(), "영화정보 아이디를 불러오지 못했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
         } else {
-            String url = "http://" + NetworkHelper.host + ":" + NetworkHelper.port +
+            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port +
                     "/movie/readCommentList?id=";
             url += movieId + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
             Log.d(TAG, url + "");
@@ -329,7 +321,7 @@ public class MovieInfoFragment extends Fragment {
                     }
             );
             request.setShouldCache(false);
-            NetworkHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
+            NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
         }
     }
 
@@ -338,9 +330,10 @@ public class MovieInfoFragment extends Fragment {
         Gson gson = new Gson();
         Comment comment = gson.fromJson(response, Comment.class);
         if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+            commentArrayList.clear();
+            commentAdapter.clear();
             commentArrayList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
-            commentAdapter = new CommentAdapter(commentArrayList, getActivity());
-            layout.movieinfoLivComments.setAdapter(commentAdapter);//리스트뷰 어댑터연결
+            commentAdapter.notifyDataSetChanged();
         }
     }
 

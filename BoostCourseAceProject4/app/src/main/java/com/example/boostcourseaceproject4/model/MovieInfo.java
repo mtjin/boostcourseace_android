@@ -3,6 +3,9 @@ package com.example.boostcourseaceproject4.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
 /*"result": [
@@ -32,6 +35,8 @@ import java.io.Serializable;
         }
         ]*/
 public class MovieInfo extends MovieInfoList implements Parcelable {
+    @PrimaryKey
+    @NonNull
     public String title;
     public int id;
     public String date;

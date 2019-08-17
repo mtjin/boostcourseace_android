@@ -2,7 +2,7 @@ package com.example.boostcourseaceproject4.utils;
 
 import com.android.volley.RequestQueue;
 
-public class NetworkHelper {
+public class NetworkRequestHelper {
     public static RequestQueue requestQueue;
     public static String host = "boostcourse-appapi.connect.or.kr";
     public static int port = 10000;
