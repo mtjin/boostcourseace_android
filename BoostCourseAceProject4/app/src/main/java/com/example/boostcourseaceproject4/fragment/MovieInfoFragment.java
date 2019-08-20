@@ -54,6 +54,7 @@ public class MovieInfoFragment extends Fragment {
     private boolean likeCancel = false;
     private boolean dislikeUp = false;
     private boolean dislikeCancel = false;
+    private boolean isAlreadySendRequest = false;
     private ArrayList<Comment> commentArrayList = new ArrayList<>();
     private CommentAdapter commentAdapter;
     private MovieInfo movieInfo;
@@ -61,7 +62,6 @@ public class MovieInfoFragment extends Fragment {
     final static int WRITE_REQUEST = 11;
     final static int TOTAL_REQUEST = 12;
     //putExtra key
-    final static String COMMENT_LIST_EXTRA = "COMMENT_LIST_EXTRA";
     final static String MOVIEINFO_EXTRA = "MOVIEINFO_EXTRA";
     final static String MOVIEID_EXTRA = "MOVIEID_EXTRA";
 
@@ -151,7 +151,6 @@ public class MovieInfoFragment extends Fragment {
 
             }
             likeState = !likeState;
-            sendLikeRequest();
         } else { //인터넷 연결 안되있을 경우
             Toast.makeText(getContext(), "인터넷이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -184,7 +183,6 @@ public class MovieInfoFragment extends Fragment {
                 dislikeCancel = false;
             }
             disLikeState = !disLikeState;
-            sendLikeRequest();
         } else { //인터넷 연결 안되있을 경우
             Toast.makeText(getContext(), "인터넷이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
         }
@@ -227,6 +225,7 @@ public class MovieInfoFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         Log.d(TAG, "좋아요싫어요 응답 성공");
+                        isAlreadySendRequest = true;
                     }
                 },
                 new Response.ErrorListener() { //에러발생시 호출될 리스너 객체
@@ -265,33 +264,33 @@ public class MovieInfoFragment extends Fragment {
 
     //id값에 해당하는 영화 상세정보 요청
     public void requestMovieInfo() {
-            if(NetworkStatusHelper.getConnectivityStatus(getContext())) { //인터넷 연결 안되있을 경우
-                String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovie?id=";
-                url += movieId; //파리미터도 추가해줌
+        if (NetworkStatusHelper.getConnectivityStatus(getContext())) { //인터넷 연결 안되있을 경우
+            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovie?id=";
+            url += movieId; //파리미터도 추가해줌
 
-                StringRequest request = new StringRequest(
-                        Request.Method.GET,
-                        url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                processMovieInfoResponse(response);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d("TAG", "영화 상세정보 요청못받음");
-                            }
+            StringRequest request = new StringRequest(
+                    Request.Method.GET,
+                    url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            processMovieInfoResponse(response);
                         }
-                );
-                request.setShouldCache(false);
-                NetworkRequestHelper.requestQueue.add(request);
-            }else{
-                String movieInfoJson = AppDatabase.selectMovieInfoJsonData(movieId);
-                processMovieInfoResponse(movieInfoJson);
-                Toast.makeText(getContext(), "DB로부터 영화 상세정보 불러왔습니다.", Toast.LENGTH_SHORT).show();
-            }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("TAG", "영화 상세정보 요청못받음");
+                        }
+                    }
+            );
+            request.setShouldCache(false);
+            NetworkRequestHelper.requestQueue.add(request);
+        } else {
+            String movieInfoJson = AppDatabase.selectMovieInfoJsonData(movieId);
+            processMovieInfoResponse(movieInfoJson);
+            Toast.makeText(getContext(), "DB로부터 영화 상세정보 불러왔습니다.", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -308,10 +307,10 @@ public class MovieInfoFragment extends Fragment {
 
     //댓글 불러오기 요청
     private void requestComment() {
-        if(NetworkStatusHelper.getConnectivityStatus(getContext())) {
+        if (NetworkStatusHelper.getConnectivityStatus(getContext())) {
             String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port +
                     "/movie/readCommentList?id=";
-            url += movieId + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
+            url += movieId + "&length=" + 300; //읽어올 개수
             Log.d(TAG, url + "");
             StringRequest request = new StringRequest(
                     Request.Method.GET,
@@ -332,7 +331,7 @@ public class MovieInfoFragment extends Fragment {
             );
             request.setShouldCache(false);
             NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
-        }else{
+        } else {
             String commentJson = AppDatabase.selectCommentJsonData(movieId);
             processCommentResponse(commentJson);
             Toast.makeText(getContext(), "DB로부터 댓글을 불러왔습니다.", Toast.LENGTH_SHORT).show();
@@ -351,6 +350,16 @@ public class MovieInfoFragment extends Fragment {
             commentAdapter.notifyDataSetChanged();
             //디비삽입
             AppDatabase.insertCommentJson(movieId, response);
+        }
+    }
+
+    @Override   //TODO::좋아요/싫어요를 버튼 누를시 그때 그때 보내면, 버튼 연타 등에서 오동작이 발생될 확률이 높습니다. 이런 경우는 변수에 값만 들고 있다가, 화면을 벗어날때 서버로 올리는 방법이 훨씬 안전합니다.
+    public void onPause() {
+        super.onPause();
+        if(!isAlreadySendRequest){ //좋아요,싫어요 서버에 요청 안보낸 경우
+            if(likeState || disLikeState){ //둘 중 하나 눌러진 상태일 경우
+                sendLikeRequest();
+            }
         }
     }
 

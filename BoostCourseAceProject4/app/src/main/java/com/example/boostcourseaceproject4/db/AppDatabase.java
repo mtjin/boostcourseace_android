@@ -26,7 +26,17 @@ public class AppDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public static void closeDatabase() {
+        // println("openDatabase 호출됨.");
+        try {
+            if(database != null){
+                database.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

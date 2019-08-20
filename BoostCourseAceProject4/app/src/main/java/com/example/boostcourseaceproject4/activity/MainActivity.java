@@ -210,4 +210,10 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //디비close
+        AppDatabase.closeDatabase();
+    }
 }

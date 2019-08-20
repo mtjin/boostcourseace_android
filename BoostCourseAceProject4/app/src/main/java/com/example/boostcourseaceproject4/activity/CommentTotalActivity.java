@@ -113,7 +113,7 @@ public class CommentTotalActivity extends AppCompatActivity {
         if (NetworkStatusHelper.getConnectivityStatus(getApplicationContext())) {
             String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port +
                     "/movie/readCommentList?id=";
-            url += movieInfo.getId() + "&length=" + Integer.MAX_VALUE; //파리미터도 추가해줌(최대개수를 불러옴)
+            url += movieInfo.getId() + "&length=" + 300;
             Log.d(TAG, url + "");
             StringRequest request = new StringRequest(
                     Request.Method.GET,
@@ -154,4 +154,9 @@ public class CommentTotalActivity extends AppCompatActivity {
             AppDatabase.insertCommentJson(movieInfo.getId(), response);
         }
     }
+
+    //TODO:현재 서버에서 배열로 오는 값을 json 그대로 DB에 저장합니다만,
+    //
+    //이 경우 총 개수를 알수 없으므로
+    //배열값 각각을 하나의 record형태로 저장하는것이 좋습니다.
 }
