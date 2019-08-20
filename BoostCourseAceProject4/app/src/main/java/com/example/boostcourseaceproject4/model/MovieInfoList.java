@@ -1,6 +1,13 @@
 package com.example.boostcourseaceproject4.model;
 
 import java.util.ArrayList;
+/*{
+        "message": "movie readMovie 성공",
+        "code": 200,
+        "resultType": "list",
+        "result": [
+        {
+ */
 /*"result": [
         {
         "title": "꾼",
@@ -28,7 +35,10 @@ import java.util.ArrayList;
         }
         ]*/
 
-public class MovieInfoList extends ResponseMovieInfo{
-    //public MovieInfo_Detail result = new MovieInfo_Detail();
+public class MovieInfoList{
+    public String message; //다른데서도 사용할 수 있게 public을 붙여줌
+    public int code;
+    public String resultType;
+    //result
     public ArrayList<MovieInfo> result = new ArrayList<MovieInfo>();
 }
