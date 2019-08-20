@@ -332,8 +332,11 @@ public class MovieInfoFragment extends Fragment {
             request.setShouldCache(false);
             NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
         } else {
-            String commentJson = AppDatabase.selectCommentJsonData(movieId);
-            processCommentResponse(commentJson);
+            ArrayList<Comment> result = AppDatabase.selectCommentData(movieInfo.getId());
+            commentArrayList.clear();
+            commentAdapter.clear();
+            commentArrayList.addAll(result);
+            commentAdapter.notifyDataSetChanged();
             Toast.makeText(getContext(), "DB로부터 댓글을 불러왔습니다.", Toast.LENGTH_SHORT).show();
         }
 
@@ -349,7 +352,7 @@ public class MovieInfoFragment extends Fragment {
             commentArrayList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
             commentAdapter.notifyDataSetChanged();
             //디비삽입
-            AppDatabase.insertCommentJson(movieId, response);
+            AppDatabase.insertComment(commentArrayList);
         }
     }
 

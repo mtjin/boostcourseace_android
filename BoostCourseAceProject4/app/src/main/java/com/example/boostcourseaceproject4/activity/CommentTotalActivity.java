@@ -135,8 +135,12 @@ public class CommentTotalActivity extends AppCompatActivity {
             request.setShouldCache(false);
             NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
         }else{
-            String commentJson = AppDatabase.selectCommentJsonData(movieInfo.getId());
-            processCommentResponse(commentJson);
+            ArrayList<Comment> result = AppDatabase.selectCommentData(movieInfo.getId());
+            commentList.clear();
+            commentAdapter.clear();
+            commentList.addAll(result);
+            commentAdapter.notifyDataSetChanged();
+            binding.commenttotalTvParticipation.setText(commentList.size()+"");
             Toast.makeText(this, "DB로부터 댓글을 불러왔습니다.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -151,7 +155,7 @@ public class CommentTotalActivity extends AppCompatActivity {
             commentList.addAll(comment.result); //comment.result타입 => ArrayList<Comment>
             commentAdapter.notifyDataSetChanged();
             binding.commenttotalTvParticipation.setText(commentList.size()+"");
-            AppDatabase.insertCommentJson(movieInfo.getId(), response);
+            AppDatabase.insertComment(commentList);
         }
     }
 

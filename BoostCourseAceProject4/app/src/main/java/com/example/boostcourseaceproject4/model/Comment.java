@@ -19,7 +19,6 @@ import android.os.Parcelable;
 public class Comment  extends CommentList implements Parcelable {
     public int id;
     public String writer;
-    /*  @ColumnInfo(name = "first_name") 으로 컬럼명도 바꿀수 있다.*/
     public int movieId;
     public String time;
     public float rating;

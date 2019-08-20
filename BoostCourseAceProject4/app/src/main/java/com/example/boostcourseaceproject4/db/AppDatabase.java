@@ -6,7 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.boostcourseaceproject4.model.Comment;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppDatabase {
     //insert or replace into  ==> 이 구문을 사용하면 중복된 값을 가지는 행이 있어도 오류가 발생하지 않고, 새로운 값으로 update 될 수 있다.
@@ -15,7 +18,7 @@ public class AppDatabase {
     private static final String TAG = "databaseHelper";
 
     private static SQLiteDatabase database;
-
+    private static ArrayList<Comment> commentList = new ArrayList<>();
 
     // 1단계: 데이터베이스(저장소)를 만들거나 오픈하는 단계
     public static void openDatabase(Context context, String databaseName) {
@@ -31,7 +34,7 @@ public class AppDatabase {
     public static void closeDatabase() {
         // println("openDatabase 호출됨.");
         try {
-            if(database != null){
+            if (database != null) {
                 database.close();
             }
         } catch (Exception e) {
@@ -93,28 +96,35 @@ public class AppDatabase {
         return null;
     }
 
+    //TODO: Json으로 받던거 수정 ,   //현재 서버에서 배열로 오는 값을 json 그대로 DB에 저장합니다만, 이 경우 총 개수를 알수 없으므로 배열값 각각을 하나의 record형태로 저장하는것이 좋습니다.
     //댓글 정보 삽입
-    public static void insertCommentJson(int id, String commentJson) {
-        if (database != null) {
-            String sql = "insert or replace into comment( id , commentJson) values(? , ?)";
-            Object[] params = {id, commentJson};
-            database.execSQL(sql, params);
+    public static void insertComment(List<Comment> commentList) {
+        if (database != null || commentList != null) {
+            for (int i = 0; i < commentList.size(); i++) {
+                Comment comment = commentList.get(i);
+                String sql = "insert or replace into comment( id , writer , movieId,times,rating,  contents,  recommend) values(? , ?,?,?,?,?,?)";
+                Object[] params = {comment.id, comment.writer, comment.movieId, comment.time, comment.rating, comment.contents, comment.recommend};
+                database.execSQL(sql, params);
+            }
         } else {
             Log.d(TAG, "데이터베이스를 먼저 오픈하세요");
         }
     }
 
     //댓글 정보  조회
-    public static String selectCommentJsonData(int id) {
+    public static ArrayList<Comment> selectCommentData(int movieId) {
         String tableName = "comment";
         if (database != null) {
             String result = "";
-            String sql = "select commentJson from " + tableName + " where id = " + id ;
+            String sql = "select id ,writer, movieId,times,rating,  contents,  recommend  from " + tableName + " where movieId = " + movieId;
             Cursor cursor = database.rawQuery(sql, null);
-            cursor.moveToNext();
-            result += cursor.getString(0);
+            commentList.clear();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                commentList.add(new Comment(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getString(3), cursor.getFloat(4), cursor.getString(5), cursor.getInt(6)));
+            }
             cursor.close();
-            return result;
+            return commentList;
         }
         return null;
     }
@@ -137,7 +147,7 @@ public class AppDatabase {
             db.execSQL(sql);
             String sql2 = "create table if not exists " + tableName2 + "(id integer PRIMARY KEY , movieInfoJson text)"; //영화상세정보 테이블 생성
             db.execSQL(sql2);
-            String sql3 = "create table if not exists " + tableName3 + "(id integer PRIMARY KEY , commentJson text)"; //댓글 테이블 생성
+            String sql3 = "create table if not exists " + tableName3 + "(id integer PRIMARY KEY , writer text, movieId integer, times text, rating float, contents text, recommend intefer )"; //댓글 테이블 생성
             db.execSQL(sql3);
         }
 
