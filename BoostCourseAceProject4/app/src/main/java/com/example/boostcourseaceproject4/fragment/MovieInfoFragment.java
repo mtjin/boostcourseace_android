@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +27,12 @@ import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.activity.CommentTotalActivity;
 import com.example.boostcourseaceproject4.activity.CommentWriteActivity;
 import com.example.boostcourseaceproject4.adapter.CommentAdapter;
+import com.example.boostcourseaceproject4.adapter.PhotoVideoAdapter;
 import com.example.boostcourseaceproject4.databinding.FragmentMovieInfoBinding;
 import com.example.boostcourseaceproject4.db.AppDatabase;
 import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.MovieInfo;
+import com.example.boostcourseaceproject4.model.PhotoVideo;
 import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
 import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 import com.google.gson.Gson;
@@ -58,6 +61,8 @@ public class MovieInfoFragment extends Fragment {
     private ArrayList<Comment> commentArrayList = new ArrayList<>();
     private CommentAdapter commentAdapter;
     private MovieInfo movieInfo;
+    private ArrayList<PhotoVideo> photoVideoArrayList = new ArrayList<>();
+
     //requestCode
     final static int WRITE_REQUEST = 11;
     final static int TOTAL_REQUEST = 12;
@@ -114,7 +119,26 @@ public class MovieInfoFragment extends Fragment {
         MainActivity.toolbar.setTitle("영화 상세");
         //댓글 서버 요청
         requestComment();
+        //영화 사진 및 비디오 리사이클러뷰 세팅
+        if(movieInfo.getPhotos() != null){
+            String[] photoUrls = movieInfo.getPhotos().split(",");
+            for(int i=0; i<photoUrls.length ;i++){
+                photoVideoArrayList.add(new PhotoVideo(photoUrls[i], 0));
+            }
+        }
+        if(movieInfo.getVideos() != null){
+            String[] videoUrls = movieInfo.getVideos().split(",");
+            for(int i=0; i< videoUrls.length ; i++){
+                photoVideoArrayList.add(new PhotoVideo(videoUrls[i], 1));
+            }
+        }
+        PhotoVideoAdapter photoVideoAdapter = new PhotoVideoAdapter(photoVideoArrayList, getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false); //레이아웃매니저 생성
+        layout.movieinfoRevGallery.setLayoutManager(layoutManager);
+        layout.movieinfoRevGallery.setAdapter(photoVideoAdapter);//만든 레이아웃매니저 객체를(설정을) 리사이클러 뷰에 설정해줌
     }
+
+
 
     //전달받은 번들 값 처리
     private void processBundle() {
