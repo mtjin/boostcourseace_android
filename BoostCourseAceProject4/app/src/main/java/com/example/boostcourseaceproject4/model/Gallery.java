@@ -1,10 +1,10 @@
 package com.example.boostcourseaceproject4.model;
 
-public class PhotoVideo {
+public class Gallery {
     String url;
     int type; //0: 사진 , 1: 비디오
 
-    public PhotoVideo(String url, int type) {
+    public Gallery(String url, int type) {
         this.url = url;
         this.type = type;
     }

@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.MovieInfoFragment">
+    tools:context=".fragment.movie_info.MovieInfoFragment">
     <data>
         <variable
             name="fragment"
-            type="com.example.boostcourseaceproject4.fragment.MovieInfoFragment" />
+            type="com.example.boostcourseaceproject4.fragment.movie_info.MovieInfoFragment" />
     </data>
 
     <ScrollView

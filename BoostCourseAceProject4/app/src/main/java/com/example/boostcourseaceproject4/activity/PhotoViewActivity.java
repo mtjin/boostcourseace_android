@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.example.boostcourseaceproject4.R;
-import com.example.boostcourseaceproject4.model.PhotoVideo;
 import com.github.chrisbanes.photoview.PhotoView;
 
 public class PhotoViewActivity extends AppCompatActivity {

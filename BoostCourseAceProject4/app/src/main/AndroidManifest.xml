@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".activity.PhotoViewActivity"></activity>
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.main.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,8 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.CommentWriteActivity" />
-        <activity android:name=".activity.CommentTotalActivity" />
+        <activity android:name=".activity.comment_write.CommentWriteActivity" />
+        <activity android:name=".activity.comment_total.CommentTotalActivity" />
     </application>
 
 </manifest>

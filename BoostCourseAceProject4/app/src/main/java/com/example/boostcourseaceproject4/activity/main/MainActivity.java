@@ -1,4 +1,4 @@
-package com.example.boostcourseaceproject4.activity;
+package com.example.boostcourseaceproject4.activity.main;
 
 import android.os.Bundle;
 
@@ -9,23 +9,16 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.adapter.MoviePagerAdapter;
-import com.example.boostcourseaceproject4.db.AppDatabase;
+import com.example.boostcourseaceproject4.database.AppDatabase;
 import com.example.boostcourseaceproject4.fragment.MovieFragment;
-import com.example.boostcourseaceproject4.fragment.MovieInfoFragment;
+import com.example.boostcourseaceproject4.fragment.movie_info.MovieInfoFragment;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
-import com.example.boostcourseaceproject4.model.MovieList;
-import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
-import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
+import com.example.boostcourseaceproject4.api.NetworkManager;
 import com.google.android.material.navigation.NavigationView;
-import com.google.gson.Gson;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -37,20 +30,24 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.Menu;
 import android.widget.Toast;
 
+import java.util.List;
+
 //메인액티비티 : 영화목록들을 뷰페이저로 보여주는 역할
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MovieFragmentListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MovieFragmentListener, MainContract.View {
     final  static  String TAG = "MainActivityT";
     private ViewPager pager; //뷰페이저
     private MoviePagerAdapter moviePagerAdapter; //영화 목록 어댑터
     private MovieInfoFragment movieInfoFragment;
     public static Toolbar toolbar; //툴바
+    private MainPresenter presenter;;
     final static String MOVIE_EXTRA = "MOVIE_EXTRA";
     final static String MOVIEID_EXTRA = "MOVIEID_EXTRA";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        presenter = new MainPresenter(this); //프레젠터 생성
         initView(); //뷰초기화
         init(); //값초기화세팅
 
@@ -85,67 +82,10 @@ public class MainActivity extends AppCompatActivity
         //데이터베이스 오픈
         AppDatabase.openDatabase(getApplicationContext(), "CinemaApp");
         //리퀘스트큐 생성
-        if (NetworkRequestHelper.requestQueue == null) {
-            NetworkRequestHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
+        if (NetworkManager.requestQueue == null) {
+            NetworkManager.requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
-        requestMovieList(); //서버에 영화 정보 요청
-    }
-
-    //영화  불러오기 요청
-    public void requestMovieList() {
-        if(NetworkStatusHelper.getConnectivityStatus(getApplicationContext())) { //인터넷 연결 상태인 경우
-            String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/readMovieList";
-            url += "?" + "type=1"; //파리미터도 추가해줌
-
-            StringRequest request = new StringRequest(
-                    Request.Method.GET,
-                    url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            processMovieListResponse(response);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d(TAG, "영화 요청못받음");
-                        }
-                    }
-            );
-            //캐시제거(매번 다시불러오게함)
-            request.setShouldCache(false);
-            NetworkRequestHelper.requestQueue.add(request);//리퀘스트큐에 넣으면 리퀘스트큐가 알아서 스레드로 서버에 요청해주고 응답가져옴
-        }else{ //인터넷 연결 끊킨 경우 디비에서 불러오기
-            String movieJson = AppDatabase.selectMovieJsonData();
-            if(movieJson != null){
-                processMovieListResponse(movieJson);
-                Toast.makeText(this, "DB로부터 영화 불러왔습니다.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    //영화 불러오기 응답
-    public void processMovieListResponse(String response) {
-        Gson gson = new Gson();
-        //TODO: 리뷰 => json으로 두번 파싱할 필요없이, ResponseMovie를 MovieList가 상속받으면 한번의 파싱으로 해결이 됩니다.
-        MovieList movieList  = (MovieList) gson.fromJson(response, MovieList.class);
-        if (movieList.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
-            for (int i = 0; i < movieList.result.size(); i++) {
-                Movie movie = movieList.result.get(i);
-                //가져온 영화의 상세정보를 가져오기위해 id값을 보내 서버에 영화상세정보 데이터를 요청함
-                MovieFragment movieFragment =new MovieFragment();
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(MOVIE_EXTRA, movie);
-                movieFragment.setArguments(bundle);
-                moviePagerAdapter.addItem(movieFragment);
-                Log.d(TAG, "영화 아이디 : " + movie.getId());
-               // requestMovieInfo(movie.getId());
-            }
-            moviePagerAdapter.notifyDataSetChanged();
-            //데이터베이스에 해당 json을 넣어준다.
-            AppDatabase.insertMovieJson(1, response);
-        }
+        presenter.requestMovieList(getApplicationContext()); //서버에 영화 정보 요청
     }
 
     @Override
@@ -208,6 +148,27 @@ public class MainActivity extends AppCompatActivity
         transaction.addToBackStack(null);
         // transaction 실행
         transaction.commit();
+    }
+
+    @Override
+    public void onToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onGetMovieListResult(List<Movie> movieList) {
+        for (int i = 0; i < movieList.size(); i++) {
+            Movie movie = movieList.get(i);
+            //가져온 영화의 상세정보를 가져오기위해 id값을 보내 서버에 영화상세정보 데이터를 요청함
+            MovieFragment movieFragment =new MovieFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(MOVIE_EXTRA, movie);
+            movieFragment.setArguments(bundle);
+            moviePagerAdapter.addItem(movieFragment);
+            Log.d(TAG, "영화 아이디 : " + movie.getId());
+            // requestMovieInfo(movie.getId());
+        }
+        moviePagerAdapter.notifyDataSetChanged();
     }
 
     @Override

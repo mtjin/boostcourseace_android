@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activity.CommentTotalActivity">
+    tools:context=".activity.comment_total.CommentTotalActivity">
     <data>
         <variable
             name="activity"
-            type="com.example.boostcourseaceproject4.activity.CommentTotalActivity" />
+            type="com.example.boostcourseaceproject4.activity.comment_total.CommentTotalActivity" />
     </data>
 
     <LinearLayout

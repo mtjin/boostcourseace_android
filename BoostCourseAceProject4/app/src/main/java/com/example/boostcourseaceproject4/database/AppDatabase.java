@@ -1,4 +1,4 @@
-package com.example.boostcourseaceproject4.db;
+package com.example.boostcourseaceproject4.database;
 
 import android.content.Context;
 import android.database.Cursor;

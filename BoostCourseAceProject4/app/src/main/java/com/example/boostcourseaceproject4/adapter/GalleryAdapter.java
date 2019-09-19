@@ -3,7 +3,6 @@ package com.example.boostcourseaceproject4.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +16,20 @@ import com.bumptech.glide.Glide;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.activity.PhotoViewActivity;
 import com.example.boostcourseaceproject4.databinding.ItemPhotovideoBinding;
-import com.example.boostcourseaceproject4.model.PhotoVideo;
+import com.example.boostcourseaceproject4.model.Gallery;
 import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 
 import java.util.ArrayList;
 
-public class PhotoVideoAdapter extends RecyclerView.Adapter<PhotoVideoAdapter.PhotoVideoViewHolder> {
-    public static final String EXTRA_PHOTOVIEW = "EXTRA_PHOTOVIEW";
-    Context context;
-    ArrayList<PhotoVideo> items = new ArrayList<PhotoVideo>();
-    private ItemClickListener itemClickListener;
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
+    private Context context;
+    private ArrayList<Gallery> items;
+    private GalleryItemClickListener itemClickListener;
 
-    public PhotoVideoAdapter(ArrayList<PhotoVideo> items, Context context) {
+    public GalleryAdapter(Context context, ArrayList<Gallery> items, GalleryItemClickListener itemClickListener) {
         this.context = context;
-        addItems(items);
+        this.items = items;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -39,12 +38,12 @@ public class PhotoVideoAdapter extends RecyclerView.Adapter<PhotoVideoAdapter.Ph
     }
 
     //아이템을 추가
-    public void addItem(PhotoVideo item) {
+    public void addItem(Gallery item) {
         items.add(item);
     }
 
 
-    public void addItems(ArrayList<PhotoVideo> items) {
+    public void addItems(ArrayList<Gallery> items) {
         this.items = items;
     }
 
@@ -55,15 +54,15 @@ public class PhotoVideoAdapter extends RecyclerView.Adapter<PhotoVideoAdapter.Ph
 
     @NonNull
     @Override
-    public PhotoVideoAdapter.PhotoVideoViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public GalleryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.item_photovideo, viewGroup, false);
-        return new PhotoVideoViewHolder(view);
+        return new GalleryViewHolder(view, itemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PhotoVideoAdapter.PhotoVideoViewHolder holder, int i) {
-        final PhotoVideo model = items.get(i);
+    public void onBindViewHolder(@NonNull GalleryViewHolder holder, int i) {
+        final Gallery model = items.get(i);
         if (model.getType() == 0) { //사진
             //TODO:: xml이미지뷰에 app:imageUrl="@{item.url}" 를 해서 했었으나 비디오쪽에서는 파싱을해서 썸네일을 띄어야하는데 그냥 모델의 url이 적용되서 안띄어져서 못함
           //  holder.binding.setItem(model);
@@ -78,36 +77,31 @@ public class PhotoVideoAdapter extends RecyclerView.Adapter<PhotoVideoAdapter.Ph
         }
     }
 
-    public class PhotoVideoViewHolder extends RecyclerView.ViewHolder {
+    public class GalleryViewHolder extends RecyclerView.ViewHolder implements GalleryItemClickListener, View.OnClickListener {
         ItemPhotovideoBinding binding;
+        GalleryItemClickListener itemClickListener;
 
-        public PhotoVideoViewHolder(@NonNull final View itemView) {
+        GalleryViewHolder(@NonNull final View itemView, GalleryItemClickListener itemClickListener) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
-            binding.photovideoIvPhotovideo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (NetworkStatusHelper.getConnectivityStatus(context)) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            PhotoVideo item = items.get(position);
-                            if (item.getType() == 0) {
-                                Toast.makeText(context, "사진", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(context, PhotoViewActivity.class);
-                                intent.putExtra(EXTRA_PHOTOVIEW, item.getUrl());
-                                context.startActivity(intent);
-                            } else {
-                                Toast.makeText(context, "동영상", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl()));
-                                context.startActivity(intent);
-                            }
-                        }
-                    } else {
-                        Toast.makeText(context, "네트워크 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            this.itemClickListener = itemClickListener;
+            assert binding != null;
+            binding.photovideoIvPhotovideo.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            itemClickListener.onItemClick(view, getAdapterPosition());
+        }
+
+        @Override
+        public void onItemClick(View view, int position) {
+
+        }
+    }
+
+    public interface GalleryItemClickListener {
+        void onItemClick(View view, int position);
     }
 
  /*   @BindingAdapter({"bind:imageUrl"})

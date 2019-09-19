@@ -1,4 +1,4 @@
-package com.example.boostcourseaceproject4.activity;
+package com.example.boostcourseaceproject4.activity.comment_write;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,40 +8,28 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.boostcourseaceproject4.R;
 import com.example.boostcourseaceproject4.databinding.ActivityCommentWriteBinding;
-import com.example.boostcourseaceproject4.model.Comment;
 import com.example.boostcourseaceproject4.model.MovieInfo;
-import com.example.boostcourseaceproject4.utils.NetworkRequestHelper;
 import com.example.boostcourseaceproject4.utils.NetworkStatusHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
-
-public class CommentWriteActivity extends AppCompatActivity {
+public class CommentWriteActivity extends AppCompatActivity implements CommentWriteContract.View {
     ActivityCommentWriteBinding binding;
     //putExtra key
     final static String MOVIEINFO_EXTRA = "MOVIEINFO_EXTRA";
     //value
-    int id; //영화 아이디
-    MovieInfo movieInfo;
-    Comment comment;
-    //날짜포맷
-    SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private int id; //영화 아이디
+    private MovieInfo movieInfo;
+    private CommentWritePresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_comment_write);
         binding.setActivity(this);
+        //presenter 생성
+        presenter = new CommentWritePresenter(this);
         //인텐트처리
         processIntent();
     }
@@ -52,70 +40,31 @@ public class CommentWriteActivity extends AppCompatActivity {
             String message = binding.commentwriteEtWrite.getText().toString().trim();
             float rating = binding.commentwriteRbRating.getRating();
             if (message.length() <= 0) {
-                Toast.makeText(this, "한글자 이상 적어주세요", Toast.LENGTH_SHORT).show();
+                onToastMessage("한글자 이상 적어주세요");
             } else {
-                //작성시간 put
-                Calendar time = Calendar.getInstance();
-                String format_time1 = format1.format(time.getTime());
-                comment = new Comment(-1, "이이22", id, format_time1, rating, message, 0);
-                sendWriteRequest();
+                presenter.requestWriteComment(id, "이이22", rating, message);
                 setResult(RESULT_OK);
                 finish();
             }
         }else{
-            Toast.makeText(this, "인터넷 연결이 끊켜있습니다.", Toast.LENGTH_SHORT).show();
+            onToastMessage("인터넷 연결이 끊켜있습니다.");
         }
     }
 
     private void processIntent() {
         Intent resultIntent = getIntent();
         movieInfo = (MovieInfo) resultIntent.getParcelableExtra(MOVIEINFO_EXTRA);
-        if (resultIntent != null) {
-            String title = movieInfo.getTitle();
-            int grade = movieInfo.getGrade();
-            binding.commentwriteTvTitle.setText(title);
-            if (grade == 12) {
-                binding.commentwriteIvGrade.setImageResource(R.drawable.ic_12);
-            } else if (grade == 15) {
-                binding.commentwriteIvGrade.setImageResource(R.drawable.ic_15);
-            } else if (grade == 19) {
-                binding.commentwriteIvGrade.setImageResource(R.drawable.ic_19);
-            }
-            id = movieInfo.getId();
+        String title = movieInfo.getTitle();
+        int grade = movieInfo.getGrade();
+        binding.commentwriteTvTitle.setText(title);
+        if (grade == 12) {
+            binding.commentwriteIvGrade.setImageResource(R.drawable.ic_12);
+        } else if (grade == 15) {
+            binding.commentwriteIvGrade.setImageResource(R.drawable.ic_15);
+        } else if (grade == 19) {
+            binding.commentwriteIvGrade.setImageResource(R.drawable.ic_19);
         }
-    }
-
-    public void sendWriteRequest() {
-        String url = "http://" + NetworkRequestHelper.host + ":" + NetworkRequestHelper.port + "/movie/createComment";
-        StringRequest request = new StringRequest(
-                Request.Method.POST,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                    }
-                },
-                new Response.ErrorListener() { //에러발생시 호출될 리스너 객체
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                    }
-                }
-        ) {
-            //만약 POST 방식에서 전달할 요청 파라미터가 있다면 getParams 메소드에서 반환하는 HashMap 객체에 넣어줍니다.
-            //이렇게 만든 요청 객체는 요청 큐에 넣어주는 것만 해주면 됩니다.
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("id", id + "");
-                params.put("writer", "이이22");
-                params.put("rating", binding.commentwriteRbRating.getRating() + "");
-                params.put("contents", binding.commentwriteEtWrite.getText() + "");
-                return params;
-            }
-        };
-        request.setShouldCache(false);
-        NetworkRequestHelper.requestQueue.add(request);
-
+        id = movieInfo.getId();
     }
 
     //취소버튼클릭
@@ -123,4 +72,8 @@ public class CommentWriteActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 }
