@@ -7,11 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,6 +26,7 @@ public class PhotoVideoAdapter extends RecyclerView.Adapter<PhotoVideoAdapter.Ph
     public static final String EXTRA_PHOTOVIEW = "EXTRA_PHOTOVIEW";
     Context context;
     ArrayList<PhotoVideo> items = new ArrayList<PhotoVideo>();
+    private ItemClickListener itemClickListener;
 
     public PhotoVideoAdapter(ArrayList<PhotoVideo> items, Context context) {
         this.context = context;

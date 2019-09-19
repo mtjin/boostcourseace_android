@@ -22,12 +22,13 @@ public class AppDatabase {
 
     // 1단계: 데이터베이스(저장소)를 만들거나 오픈하는 단계
     public static void openDatabase(Context context, String databaseName) {
-        // println("openDatabase 호출됨.");
-        try {
-            DatabaseHelper helper = new DatabaseHelper(context, databaseName, null, 1); //헬퍼를 생성함
-            database = helper.getWritableDatabase();  //데이터베이스에 쓸수 있는 권한을 리턴해줌(갖게됨)
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(database == null) {
+            try {
+                DatabaseHelper helper = new DatabaseHelper(context, databaseName, null, 1); //헬퍼를 생성함
+                database = helper.getWritableDatabase();  //데이터베이스에 쓸수 있는 권한을 리턴해줌(갖게됨)
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
