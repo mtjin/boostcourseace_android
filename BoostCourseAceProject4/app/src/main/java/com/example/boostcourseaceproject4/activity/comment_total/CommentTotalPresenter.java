@@ -40,7 +40,13 @@ public class CommentTotalPresenter implements CommentTotalContract.Presenter {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            responseCommentList(response);
+                            Gson gson = new Gson();
+                            Comment comment = gson.fromJson(response, Comment.class);
+                            if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+                                AppDatabase.insertComment(comment.result);  //TODO:: Repository만들어서 데이터베이스에 넣는다고하는데 시간상 나중에 보기로한다.
+                                view.onToastMessage("서버로부터 댓글을 불러왔습니다.");
+                                view.onGetCommentListResult(comment.result);
+                            }
                         }
                     },
                     new Response.ErrorListener() {
@@ -60,16 +66,7 @@ public class CommentTotalPresenter implements CommentTotalContract.Presenter {
         }
     }
 
-    @Override
-    public void responseCommentList(String response) {
-        Gson gson = new Gson();
-        Comment comment = gson.fromJson(response, Comment.class);
-        if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
-            AppDatabase.insertComment(comment.result);  //TODO:: Repository만들어서 데이터베이스에 넣는다고하는데 시간상 나중에 보기로한다.
-            view.onToastMessage("서버로부터 댓글을 불러왔습니다.");
-            view.onGetCommentListResult(comment.result);
-        }
-    }
+
 
     @Override
     public void requestCommentRecommend(Context context, final Comment comment) {

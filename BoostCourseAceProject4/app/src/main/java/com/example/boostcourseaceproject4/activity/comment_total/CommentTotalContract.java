@@ -15,7 +15,6 @@ public interface CommentTotalContract {
     }
     interface Presenter{
         void requestCommentList(Context context, MovieInfo movieInfo); //댓글리스트 서버 요청
-        void responseCommentList(String response); //댓글리스트 서버로부터 응답
         void requestCommentRecommend(Context context, Comment comment); //댓글 추천 서버 요청
     }
 }

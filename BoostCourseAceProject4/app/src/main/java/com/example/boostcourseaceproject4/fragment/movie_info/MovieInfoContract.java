@@ -17,9 +17,7 @@ public interface MovieInfoContract {
 
     interface Presenter{
         void requestCommentList(Context context, int movieId); // 댓글리스트 서버 요청
-        void responseCommentList(String response); // 댓글리스트 서버 응답
         void requestMovieInfo(Context context, int movieId); // 영화 상세정보 서버 요청
-        void responseMovieInfo(String response, int movieId);// 영화 상세정보 서버 응답
         void requestMovieLike(int movieId, boolean likeCancel, boolean likeUp, boolean dislikeUp, boolean dislikeCancel); // 영화 좋아요 싫어요 서버 요청
         void requestCommentRecommend(Context context, Comment comment); //댓글 추천 서버 요청
     }

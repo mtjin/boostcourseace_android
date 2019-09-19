@@ -40,7 +40,13 @@ public class MovieInfoPresenter implements MovieInfoContract.Presenter {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            responseCommentList(response);
+                            Gson gson = new Gson();
+                            Comment comment = gson.fromJson(response, Comment.class);
+                            if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+                                view.onGetCommentListResult(comment.result);
+                                //디비삽입
+                                AppDatabase.insertComment(comment.result);//TODO:: Repository만들어서 데이터베이스에 넣는다고하는데 시간상 나중에 보기로한다.
+                            }
                         }
                     },
                     new Response.ErrorListener() {
@@ -60,16 +66,7 @@ public class MovieInfoPresenter implements MovieInfoContract.Presenter {
         }
     }
 
-    @Override //댓글 요청 응답
-    public void responseCommentList(String response) {
-        Gson gson = new Gson();
-        Comment comment = gson.fromJson(response, Comment.class);
-        if (comment.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
-            view.onGetCommentListResult(comment.result);
-            //디비삽입
-            AppDatabase.insertComment(comment.result);//TODO:: Repository만들어서 데이터베이스에 넣는다고하는데 시간상 나중에 보기로한다.
-        }
-    }
+
 
     @Override //영화상세정보 요청
     public void requestMovieInfo(Context context, final int movieId) {
@@ -83,7 +80,13 @@ public class MovieInfoPresenter implements MovieInfoContract.Presenter {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            responseMovieInfo(response, movieId);
+                            Gson gson = new Gson();
+                            MovieInfo movieInfo = gson.fromJson(response, MovieInfo.class);
+                            if (movieInfo.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+                                view.onGetMovieInfoResult(movieInfo.result.get(0));
+                                AppDatabase.insertMovieInfoJson(movieId, response);
+                            }
+                            view.onToastMessage("DB로부터 영화 상세정보 불러왔습니다.");
                         }
                     },
                     new Response.ErrorListener() {
@@ -96,19 +99,14 @@ public class MovieInfoPresenter implements MovieInfoContract.Presenter {
             request.setShouldCache(false);
             NetworkManager.requestQueue.add(request);
         } else {
-            String movieInfoJson = AppDatabase.selectMovieInfoJsonData(movieId);
-            responseMovieInfo(movieInfoJson, movieId);
+            String response = AppDatabase.selectMovieInfoJsonData(movieId);
+            Gson gson = new Gson();
+            MovieInfo movieInfo = gson.fromJson(response, MovieInfo.class);
+            if (movieInfo.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+                view.onGetMovieInfoResult(movieInfo.result.get(0));
+                AppDatabase.insertMovieInfoJson(movieId, response);
+            }
             view.onToastMessage("DB로부터 영화 상세정보 불러왔습니다.");
-        }
-    }
-
-    @Override //영화상세정보 응답
-    public void responseMovieInfo(String response, int movieId) {
-        Gson gson = new Gson();
-        MovieInfo movieInfo = gson.fromJson(response, MovieInfo.class);
-        if (movieInfo.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
-            view.onGetMovieInfoResult(movieInfo.result.get(0));
-            AppDatabase.insertMovieInfoJson(movieId, response);
         }
     }
 

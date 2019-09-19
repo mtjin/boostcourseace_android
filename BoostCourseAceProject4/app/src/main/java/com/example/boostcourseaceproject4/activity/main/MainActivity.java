@@ -18,7 +18,9 @@ import com.example.boostcourseaceproject4.fragment.movie_info.MovieInfoFragment;
 import com.example.boostcourseaceproject4.interfaces.MovieFragmentListener;
 import com.example.boostcourseaceproject4.model.Movie;
 import com.example.boostcourseaceproject4.api.NetworkManager;
+import com.example.boostcourseaceproject4.model.MovieList;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -155,20 +157,28 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onGetMovieListResult(List<Movie> movieList) {
-        for (int i = 0; i < movieList.size(); i++) {
-            Movie movie = movieList.get(i);
-            //가져온 영화의 상세정보를 가져오기위해 id값을 보내 서버에 영화상세정보 데이터를 요청함
-            MovieFragment movieFragment =new MovieFragment();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(MOVIE_EXTRA, movie);
-            movieFragment.setArguments(bundle);
-            moviePagerAdapter.addItem(movieFragment);
-            Log.d(TAG, "영화 아이디 : " + movie.getId());
-            // requestMovieInfo(movie.getId());
+    //영화 불러오기 응답
+    public void responseMovieList(String response){
+        Gson gson = new Gson();
+        //TODO: 리뷰 => json으로 두번 파싱할 필요없이, ResponseMovie를 MovieList가 상속받으면 한번의 파싱으로 해결이 됩니다.
+        MovieList movieList  = (MovieList) gson.fromJson(response, MovieList.class);
+        if (movieList.code == 200) { //코드가 200과 같다면 result라는거안에 데이터가 들어가있다는것을 확신할 수 있음
+            List<Movie> movieResultList = movieList.result;
+            for (int i = 0; i < movieResultList.size(); i++) {
+                Movie movie = movieResultList.get(i);
+                //가져온 영화의 상세정보를 가져오기위해 id값을 보내 서버에 영화상세정보 데이터를 요청함
+                MovieFragment movieFragment =new MovieFragment();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(MOVIE_EXTRA, movie);
+                movieFragment.setArguments(bundle);
+                moviePagerAdapter.addItem(movieFragment);
+                Log.d(TAG, "영화 아이디 : " + movie.getId());
+                // requestMovieInfo(movie.getId());
+            }
+            moviePagerAdapter.notifyDataSetChanged();
+            //데이터베이스에 해당 json을 넣어준다. TODO:: Repository만들어서 데이터베이스에 넣는다고하는데 시간상 나중에 보기로한다.
+            AppDatabase.insertMovieJson(1, response);
         }
-        moviePagerAdapter.notifyDataSetChanged();
     }
 
     @Override
