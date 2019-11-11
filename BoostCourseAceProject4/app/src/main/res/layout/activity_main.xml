@@ -5,41 +5,119 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@drawable/main_background"
-    tools:openDrawer="start">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start"
+    >
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            app:elevation="0dp"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:layout_height="wrap_content">
+            app:elevation="0dp"
+            >
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                app:titleTextColor="@color/colorWhite"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:layout_anchor="@+id/appBarLayout"
+                app:layout_anchorGravity="center"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:titleTextColor="@color/colorWhite"
+                >
 
+
+                <ImageView
+                    android:id="@+id/main_iv_currentorder"
+                    android:layout_gravity="right"
+                    android:layout_width="115dp"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_marginEnd="10dp"
+                    android:adjustViewBounds="true"
+                    android:paddingBottom="2dp"
+                    android:src="@drawable/order11"
+                    />
+
+
+            </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/main_container"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_height="match_parent" >
+            >
 
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/main_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                />
+            <LinearLayout
+                android:id="@+id/main_linear_anim"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3dp"
+                android:layout_gravity="right"
+                android:background="@color/colorBlue2"
+                android:orientation="vertical"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                >
+
+                <ImageView
+                    android:id="@+id/main_iv_reservation_order"
+                    android:layout_width="100dp"
+                    android:layout_height="48dp"
+                    android:elevation="4dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"
+                    android:src="@drawable/order11"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/colorWhite"
+                    />
+
+                <ImageView
+                    android:id="@+id/main_iv_quration_order"
+                    android:layout_width="100dp"
+                    android:layout_gravity="center"
+                    android:layout_height="48dp"
+                    android:elevation="4dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/order22"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorWhite"
+                    />
+
+                <ImageView
+                    android:id="@+id/main_iv_open_order"
+                    android:layout_width="100dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:elevation="4dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/order33"
+                    />
+            </LinearLayout>
         </FrameLayout>
+
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -50,6 +128,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer"
+        />
 
 </androidx.drawerlayout.widget.DrawerLayout>

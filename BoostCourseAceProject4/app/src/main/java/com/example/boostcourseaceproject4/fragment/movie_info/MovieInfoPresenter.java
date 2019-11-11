@@ -86,7 +86,7 @@ public class MovieInfoPresenter implements MovieInfoContract.Presenter {
                                 view.onGetMovieInfoResult(movieInfo.result.get(0));
                                 AppDatabase.insertMovieInfoJson(movieId, response);
                             }
-                            view.onToastMessage("DB로부터 영화 상세정보 불러왔습니다.");
+                            view.onToastMessage("서버로부터 영화 상세정보 불러왔습니다.");
                         }
                     },
                     new Response.ErrorListener() {

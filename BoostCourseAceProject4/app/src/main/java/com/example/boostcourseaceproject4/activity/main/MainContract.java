@@ -14,6 +14,6 @@ public interface MainContract {
     }
 
     interface Presenter{
-        void requestMovieList(Context context); //영화리스트 서버 요청
+        void requestMovieList(Context context, int orderType); //영화리스트 서버 요청, orderType은 정렬기준
     }
 }

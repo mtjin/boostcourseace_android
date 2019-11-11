@@ -23,10 +23,10 @@ public class MainPresenter implements MainContract.Presenter{
     }
 
     //영화  불러오기 요청
-    public void requestMovieList(Context context){
+    public void requestMovieList(Context context , int orderType){
         if(NetworkStatusHelper.getConnectivityStatus(context)) { //인터넷 연결 상태인 경우
             String url = "http://" + NetworkManager.host + ":" + NetworkManager.port + "/movie/readMovieList";
-            url += "?" + "type=1"; //파리미터도 추가해줌
+            url += "?" + "type=" + orderType; //파리미터도 추가해줌
 
             StringRequest request = new StringRequest(
                     Request.Method.GET,
